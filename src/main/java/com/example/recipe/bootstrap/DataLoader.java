@@ -33,8 +33,8 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Notes notes = new Notes();
-        notes.setRecipeNotes("Chilling tomatoes hurts their flavor. So, if you want to add chopped tomato to your guacamole, add it just before serving.");
+        Notes guacamoleNotes = new Notes();
+        guacamoleNotes.setRecipeNotes("Chilling tomatoes hurts their flavor. So, if you want to add chopped tomato to your guacamole, add it just before serving.");
         Category mexican = this.categoryRepository.findByDescription("Mexican").get();
         Recipe guacamole = new Recipe();
         HashSet<Recipe> recipes = new HashSet<Recipe>();
@@ -42,8 +42,8 @@ public class DataLoader implements CommandLineRunner {
         categories.add(mexican);
         recipes.add(guacamole);
         mexican.setRecipes(recipes);
-        notes.setRecipe(guacamole);
-        HashSet<Ingredient> ingredients = this.getIngredients(guacamole);
+        guacamoleNotes.setRecipe(guacamole);
+        HashSet<Ingredient> ingredients = this.getIngredients(guacamole, 0);
         guacamole.setDirections("\n" +
                 "Cut the avocado:\n" +
                 "Cut the avocados in half. Remove the pit. Score the inside of the avocado with a blunt knife and scoop out the flesh with a spoon. (See How to Cut and Peel an Avocado.) Place in a bowl.\n" +
@@ -78,10 +78,76 @@ public class DataLoader implements CommandLineRunner {
                 "The word \"guacamole\" and the dip, are both originally from Mexico, where avocados have been cultivated for thousands of years. The name is derived from two Aztec Nahuatl words—ahuacatl (avocado) and molli (sauce).");
         guacamole.setImage(this.getBytesFromImage("static/images/recipes/guacamole.jpg"));
         guacamole.setDifficulty(Difficulty.MODERATE);
-        guacamole.setNotes(notes);
+        guacamole.setNotes(guacamoleNotes);
         guacamole.setIngredients(ingredients);
         guacamole.setCategories(categories);
         this.recipeRepository.save(guacamole);
+        Notes chickenNotes = new Notes();
+        chickenNotes.setRecipeNotes("It's just a chicken.");
+        Category american = this.categoryRepository.findByDescription("American").get();
+        Recipe chicken = new Recipe();
+        HashSet<Recipe> chickenRecipes = new HashSet<Recipe>();
+        HashSet<Category> chickenCategories = new HashSet<Category>();
+        chickenCategories.add(american);
+        chickenRecipes.add(chicken);
+        american.setRecipes(chickenRecipes);
+        chickenNotes.setRecipe(chicken);
+        HashSet<Ingredient> chickenIngredients = this.getIngredients(chicken, 1);
+        chicken.setDirections("Prepare a gas or charcoal grill for medium-high, direct heat\n" +
+                "Make the marinade and coat the chicken:\n" +
+                "In a large bowl, stir together the chili powder, oregano, cumin, sugar, salt, garlic and orange zest. Stir in the orange juice and olive oil to make a loose paste. Add the chicken to the bowl and toss to coat all over.\n" +
+                "\n" +
+                "Set aside to marinate while the grill heats and you prepare the rest of the toppings.\n" +
+                "\n" +
+                "Grill the chicken:\n" +
+                "Grill the chicken for 3 to 4 minutes per side, or until a thermometer inserted into the thickest part of the meat registers 165F. Transfer to a plate and rest for 5 minutes.\n" +
+                "\n" +
+                "Warm the tortillas:\n" +
+                "Place each tortilla on the grill or on a hot, dry skillet over medium-high heat. As soon as you see pockets of the air start to puff up in the tortilla, turn it with tongs and heat for a few seconds on the other side.\n" +
+                "\n" +
+                "Wrap warmed tortillas in a tea towel to keep them warm until serving.\n" +
+                "\n" +
+                "Assemble the tacos:\n" +
+                "Slice the chicken into strips. On each tortilla, place a small handful of arugula. Top with chicken slices, sliced avocado, radishes, tomatoes, and onion slices. Drizzle with the thinned sour cream. Serve with lime wedges.");
+        chicken.setPrepTime(20);
+        chicken.setCookTime(15);
+        chicken.setServings(6);
+        chicken.setSource("Simply Recipes");
+        chicken.setUrl("https://www.simplyrecipes.com/recipes/spicy_grilled_chicken_tacos/");
+        chicken.setDescription("We have a family motto and it is this: Everything goes better in a tortilla.\n" +
+                "\n" +
+                "\n" +
+                "Any and every kind of leftover can go inside a warm tortilla, usually with a healthy dose of pickled jalapenos. I can always sniff out a late-night snacker when the aroma of tortillas heating in a hot pan on the stove comes wafting through the house.\n" +
+                "\n" +
+                "FEATURED VIDEO\n" +
+                "Volume 0%\n" +
+                " \n" +
+                "How to Make Spanish Rice\n" +
+                "Today's tacos are more purposeful – a deliberate meal instead of a secretive midnight snack!\n" +
+                "\n" +
+                "\n" +
+                "First, I marinate the chicken briefly in a spicy paste of ancho chile powder, oregano, cumin, and sweet orange juice while the grill is heating. You can also use this time to prepare the taco toppings.\n" +
+                "\n" +
+                "\n" +
+                "Grill the chicken, then let it rest while you warm the tortillas. Now you are ready to assemble the tacos and dig in. The whole meal comes together in about 30 minutes!\n" +
+                "\n" +
+                "\n" +
+                "Sally Vargas\n" +
+                "The ancho chiles I use in the marinade are named for their wide shape. They are large, have a deep reddish brown color when dried, and are mild in flavor with just a hint of heat. You can find ancho chile powder at any markets that sell Mexican ingredients, or online.\n" +
+                "\n" +
+                "\n" +
+                "I like to put all the toppings in little bowls on a big platter at the center of the table: avocados, radishes, tomatoes, red onions, wedges of lime, and a sour cream sauce. I add arugula, as well – this green isn't traditional for tacos, but we always seem to have some in the fridge and I think it adds a nice green crunch to the tacos.\n" +
+                "\n" +
+                "\n" +
+                "Everyone can grab a warm tortilla from the pile and make their own tacos just they way they like them.\n" +
+                "\n" +
+                "You could also easily double or even triple this recipe for a larger party. A taco and a cold beer on a warm day? Now that's living!");
+        chicken.setImage(this.getBytesFromImage("static/images/recipes/chicken.jpeg"));
+        chicken.setDifficulty(Difficulty.EASY);
+        chicken.setNotes(chickenNotes);
+        chicken.setIngredients(chickenIngredients);
+        chicken.setCategories(chickenCategories);
+        this.recipeRepository.save(chicken);
     }
 
     private Byte[] getBytesFromImage(String imagePath) throws IOException {
@@ -96,8 +162,18 @@ public class DataLoader implements CommandLineRunner {
         return result;
     }
 
-    private HashSet<Ingredient> getIngredients(Recipe recipe) {
+    private HashSet<Ingredient> getIngredients(Recipe recipe, int type) {
         HashSet<Ingredient> ingredients = new HashSet<Ingredient>();
+        if (type == 0)
+            this.populateIngredientsForGuacamole(recipe, ingredients);
+        else
+            this.populateIngredientsForChicken(recipe, ingredients);
+        for (Ingredient ingredient : ingredients)
+            ingredient.setRecipe(recipe);
+        return ingredients;
+    }
+
+    private void populateIngredientsForGuacamole(Recipe recipe, HashSet<Ingredient> ingredients) {
         UnitOfMeasure unit = this.unitOfMeasureRepository.findByDescription("Unit").get();
         UnitOfMeasure teaspoon = this.unitOfMeasureRepository.findByDescription("Teaspoon").get();
         UnitOfMeasure tablespoon = this.unitOfMeasureRepository.findByDescription("Tablespoon").get();
@@ -151,8 +227,61 @@ public class DataLoader implements CommandLineRunner {
         tortilla.setAmount(new BigDecimal(1));
         tortilla.setUnityOfMeasure(unit);
         ingredients.add(tortilla);
-        for (Ingredient ingredient : ingredients)
-            ingredient.setRecipe(recipe);
-        return ingredients;
+    }
+
+    private void populateIngredientsForChicken(Recipe recipe, HashSet<Ingredient> ingredients) {
+        UnitOfMeasure unit = this.unitOfMeasureRepository.findByDescription("Unit").get();
+        UnitOfMeasure teaspoon = this.unitOfMeasureRepository.findByDescription("Teaspoon").get();
+        UnitOfMeasure tablespoon = this.unitOfMeasureRepository.findByDescription("Tablespoon").get();
+        Ingredient ancho = new Ingredient();
+        ancho.setDescription("ancho chili powder");
+        ancho.setAmount(new BigDecimal(2));
+        ancho.setUnityOfMeasure(tablespoon);
+        ingredients.add(ancho);
+        Ingredient oregano = new Ingredient();
+        oregano.setDescription("dried oregano");
+        oregano.setAmount(new BigDecimal(1));
+        oregano.setUnityOfMeasure(teaspoon);
+        ingredients.add(oregano);
+        Ingredient cumin = new Ingredient();
+        cumin.setDescription("dried cumin");
+        cumin.setAmount(new BigDecimal(1));
+        cumin.setUnityOfMeasure(teaspoon);
+        ingredients.add(cumin);
+        Ingredient sugar = new Ingredient();
+        sugar.setDescription("sugar");
+        sugar.setAmount(new BigDecimal(1));
+        sugar.setUnityOfMeasure(teaspoon);
+        ingredients.add(sugar);
+        Ingredient salt = new Ingredient();
+        salt.setDescription("salt");
+        salt.setAmount(new BigDecimal(0.5));
+        salt.setUnityOfMeasure(teaspoon);
+        ingredients.add(salt);
+        Ingredient garlic = new Ingredient();
+        garlic.setDescription("clove garlic, finely chopped");
+        garlic.setAmount(new BigDecimal(1));
+        garlic.setUnityOfMeasure(unit);
+        ingredients.add(garlic);
+        Ingredient orange = new Ingredient();
+        orange.setDescription("finely grated orange zest");
+        orange.setAmount(new BigDecimal(1));
+        orange.setUnityOfMeasure(tablespoon);
+        ingredients.add(orange);
+        Ingredient juice = new Ingredient();
+        juice.setDescription("fresh-squeezed orange juice");
+        juice.setAmount(new BigDecimal(3));
+        juice.setUnityOfMeasure(tablespoon);
+        ingredients.add(juice);
+        Ingredient olive = new Ingredient();
+        olive.setDescription("olive oil");
+        olive.setAmount(new BigDecimal(2));
+        olive.setUnityOfMeasure(tablespoon);
+        ingredients.add(olive);
+        Ingredient thighs = new Ingredient();
+        thighs.setDescription("skinless, boneless chicken thighs (1 1/4 pounds)");
+        thighs.setAmount(new BigDecimal(6));
+        thighs.setUnityOfMeasure(unit);
+        ingredients.add(thighs);
     }
 }
