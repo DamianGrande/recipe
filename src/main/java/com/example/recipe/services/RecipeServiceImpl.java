@@ -13,6 +13,7 @@ import java.util.HashMap;
 public class RecipeServiceImpl implements RecipeService {
     private final RecipeRepository recipeRepository;
     private Iterable<Recipe> recipes;
+    private HashMap<Long, String> images;
 
     @Autowired
     public RecipeServiceImpl(RecipeRepository recipeRepository) {
@@ -27,16 +28,27 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public HashMap<Long, String> getEncodedImages() {
+        if (this.images != null)
+            return this.images;
         this.populateRecipes();
-        HashMap<Long, String> map = new HashMap<Long, String>();
+        this.images = new HashMap<Long, String>();
         for (Recipe recipe : this.recipes) {
             byte[] image = new byte[recipe.getImage().length];
             int index = 0;
             for (Byte byt : recipe.getImage())
                 image[index++] = byt;
-            map.put(recipe.getId(), Base64.encodeBase64String(image));
+            this.images.put(recipe.getId(), Base64.encodeBase64String(image));
         }
-        return map;
+        return this.images;
+    }
+
+    @Override
+    public Recipe getRecipe(Long id) {
+        this.populateRecipes();
+        for (Recipe recipe : this.recipes)
+            if (recipe.getId().equals(id))
+                return recipe;
+        return null;
     }
 
     private void populateRecipes() {

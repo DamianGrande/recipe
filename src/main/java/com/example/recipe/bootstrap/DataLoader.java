@@ -151,8 +151,8 @@ public class DataLoader implements CommandLineRunner {
     private Byte[] getBytesFromImage(String imagePath) throws IOException {
         BufferedImage bImage = ImageIO.read(new ClassPathResource(imagePath).getFile());
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ImageIO.write(bImage, "jpg", bos );
-        byte [] data = bos.toByteArray();
+        ImageIO.write(bImage, "jpg", bos);
+        byte[] data = bos.toByteArray();
         Byte[] result = new Byte[data.length];
         int index = 0;
         for (byte element : data)
@@ -163,15 +163,15 @@ public class DataLoader implements CommandLineRunner {
     private HashSet<Ingredient> getIngredients(Recipe recipe, int type) {
         HashSet<Ingredient> ingredients = new HashSet<Ingredient>();
         if (type == 0)
-            this.populateIngredientsForGuacamole(recipe, ingredients);
+            this.populateIngredientsForGuacamole(ingredients);
         else
-            this.populateIngredientsForChicken(recipe, ingredients);
+            this.populateIngredientsForChicken(ingredients);
         for (Ingredient ingredient : ingredients)
             ingredient.setRecipe(recipe);
         return ingredients;
     }
 
-    private void populateIngredientsForGuacamole(Recipe recipe, HashSet<Ingredient> ingredients) {
+    private void populateIngredientsForGuacamole(HashSet<Ingredient> ingredients) {
         UnitOfMeasure unit = this.unitOfMeasureRepository.findByDescription("Unit").get();
         UnitOfMeasure teaspoon = this.unitOfMeasureRepository.findByDescription("Teaspoon").get();
         UnitOfMeasure tablespoon = this.unitOfMeasureRepository.findByDescription("Tablespoon").get();
@@ -227,7 +227,7 @@ public class DataLoader implements CommandLineRunner {
         ingredients.add(tortilla);
     }
 
-    private void populateIngredientsForChicken(Recipe recipe, HashSet<Ingredient> ingredients) {
+    private void populateIngredientsForChicken(HashSet<Ingredient> ingredients) {
         UnitOfMeasure unit = this.unitOfMeasureRepository.findByDescription("Unit").get();
         UnitOfMeasure teaspoon = this.unitOfMeasureRepository.findByDescription("Teaspoon").get();
         UnitOfMeasure tablespoon = this.unitOfMeasureRepository.findByDescription("Tablespoon").get();

@@ -8,4 +8,6 @@ public interface RecipeService {
     Iterable<Recipe> getRecipes();
 
     HashMap<Long, String> getEncodedImages();
+
+    Recipe getRecipe(Long id);
 }

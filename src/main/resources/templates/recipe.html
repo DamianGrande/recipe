@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <title>Recipe</title>
+</head>
+<body>
+<div class="container">
+    <div class="row justify-content-center" style="margin-bottom: 10px; margin-top: 10px;">
+        <img th:src="@{'data:image/png;base64,'+${images.get(recipe.getId())}}"/>
+    </div>
+    <div class="row justify-content-center" style="margin-bottom: 10px; margin-top: 10px;">
+        <p th:text="${recipe.getDescription()}"></p>
+    </div>
+    <div class="row justify-content-center" style="margin-bottom: 10px; margin-top: 10px;">
+        <h3>Ingredients</h3>
+    </div>
+    <div class="row justify-content-center" style="margin-bottom: 10px; margin-top: 10px;">
+        <ul>
+            <li th:each="ingredient : ${recipe.getIngredients()}">
+                <p th:text="${ingredient.getAmount().stripTrailingZeros()} +  ' ' +  ${ingredient.getUnityOfMeasure().getDescription()} + ' - ' +  ${ingredient.getDescription()}"></p>
+            </li>
+        </ul>
+    </div>
+    <div class="row justify-content-center" style="margin-bottom: 10px; margin-top: 10px;">
+        <h3>Preparation</h3>
+    </div>
+    <div class="row justify-content-center" style="margin-bottom: 10px; margin-top: 10px;">
+        <p th:text="${recipe.getDirections()}"></p>
+    </div>
+</div>
+</body>
+</html>
