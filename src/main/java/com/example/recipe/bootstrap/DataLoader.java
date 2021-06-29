@@ -11,9 +11,7 @@ import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
-import java.awt.image.WritableRaster;
-import java.io.File;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -151,13 +149,13 @@ public class DataLoader implements CommandLineRunner {
     }
 
     private Byte[] getBytesFromImage(String imagePath) throws IOException {
-        File file = new ClassPathResource(imagePath).getFile();
-        BufferedImage bufferedImage = ImageIO.read(file);
-        WritableRaster raster = bufferedImage.getRaster();
-        DataBufferByte data = (DataBufferByte) raster.getDataBuffer();
-        Byte[] result = new Byte[data.getData().length];
+        BufferedImage bImage = ImageIO.read(new ClassPathResource(imagePath).getFile());
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ImageIO.write(bImage, "jpg", bos );
+        byte [] data = bos.toByteArray();
+        Byte[] result = new Byte[data.length];
         int index = 0;
-        for (byte element : data.getData())
+        for (byte element : data)
             result[index++] = element;
         return result;
     }

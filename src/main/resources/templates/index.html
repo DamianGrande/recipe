@@ -2,9 +2,22 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <title>Recipe Home</title>
 </head>
 <body>
-<h1>My Recipes!</h1>
+<h1 style="color: darkslategrey; text-align: center; margin-bottom: 50px;">My Recipes!</h1>
+<div class="container">
+    <div class="row" th:each="recipe : ${recipes}">
+        <button type="button" class="btn btn-primary" style="margin-bottom: 10px;">
+            <p>
+                <img th:src="@{'data:image/png;base64,'+${images.get(recipe.getId())}}"
+                     style="height: 200px; width: 200px; float: left; margin-right: 5px;'"/>
+            <p th:text="${recipe.getDescription()}" style="text-align: left"></p>
+            </p>
+        </button>
+    </div>
+</div>
 </body>
 </html>
