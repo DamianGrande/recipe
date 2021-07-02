@@ -2,6 +2,7 @@ package com.example.recipe.services;
 
 import com.example.recipe.domain.Recipe;
 import com.example.recipe.repositories.RecipeRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +11,7 @@ import org.apache.commons.codec.binary.Base64;
 import java.util.HashMap;
 
 @Service
+@Slf4j
 public class RecipeServiceImpl implements RecipeService {
     private final RecipeRepository recipeRepository;
     private Iterable<Recipe> recipes;
@@ -22,6 +24,7 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     public Iterable<Recipe> getRecipes() {
+        log.debug("I'm in the service");
         this.populateRecipes();
         return this.recipes;
     }
