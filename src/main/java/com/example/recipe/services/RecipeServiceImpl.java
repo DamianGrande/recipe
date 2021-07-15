@@ -1,5 +1,8 @@
 package com.example.recipe.services;
 
+import com.example.recipe.commands.RecipeCommand;
+import com.example.recipe.converters.RecipeCommandToRecipe;
+import com.example.recipe.converters.RecipeToRecipeCommand;
 import com.example.recipe.domain.Recipe;
 import com.example.recipe.repositories.RecipeRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -8,18 +11,23 @@ import org.springframework.stereotype.Service;
 
 import org.apache.commons.codec.binary.Base64;
 
+import javax.transaction.Transactional;
 import java.util.HashMap;
 
 @Service
 @Slf4j
 public class RecipeServiceImpl implements RecipeService {
     private final RecipeRepository recipeRepository;
+    private final RecipeCommandToRecipe recipeCommandToRecipe;
+    private final RecipeToRecipeCommand recipeToRecipeCommand;
     private Iterable<Recipe> recipes;
     private HashMap<Long, String> images;
 
     @Autowired
-    public RecipeServiceImpl(RecipeRepository recipeRepository) {
+    public RecipeServiceImpl(RecipeRepository recipeRepository, RecipeCommandToRecipe recipeCommandToRecipe, RecipeToRecipeCommand recipeToRecipeCommand) {
         this.recipeRepository = recipeRepository;
+        this.recipeCommandToRecipe = recipeCommandToRecipe;
+        this.recipeToRecipeCommand = recipeToRecipeCommand;
     }
 
     @Override
@@ -57,5 +65,13 @@ public class RecipeServiceImpl implements RecipeService {
     private void populateRecipes() {
         if (this.recipes == null)
             this.recipes = this.recipeRepository.findAll();
+    }
+
+    @Override
+    @Transactional
+    public RecipeCommand saveRecipeCommand(RecipeCommand command) {
+        Recipe detachedRecipe = this.recipeCommandToRecipe.convert(command);
+        Recipe savedRecipe = this.recipeRepository.save(detachedRecipe);
+        return this.recipeToRecipeCommand.convert(savedRecipe);
     }
 }
