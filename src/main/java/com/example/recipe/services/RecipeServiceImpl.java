@@ -44,11 +44,13 @@ public class RecipeServiceImpl implements RecipeService {
         this.populateRecipes();
         this.images = new HashMap<Long, String>();
         for (Recipe recipe : this.recipes) {
-            byte[] image = new byte[recipe.getImage().length];
-            int index = 0;
-            for (Byte byt : recipe.getImage())
-                image[index++] = byt;
-            this.images.put(recipe.getId(), Base64.encodeBase64String(image));
+            if (recipe.getImage() != null) {
+                byte[] image = new byte[recipe.getImage().length];
+                int index = 0;
+                for (Byte byt : recipe.getImage())
+                    image[index++] = byt;
+                this.images.put(recipe.getId(), Base64.encodeBase64String(image));
+            }
         }
         return this.images;
     }
@@ -63,8 +65,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     private void populateRecipes() {
-        if (this.recipes == null)
-            this.recipes = this.recipeRepository.findAll();
+        this.recipes = this.recipeRepository.findAll();
     }
 
     @Override

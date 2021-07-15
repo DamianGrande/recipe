@@ -1,11 +1,11 @@
 package com.example.recipe.controllers;
 
+import com.example.recipe.commands.RecipeCommand;
 import com.example.recipe.services.RecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class RecipeController {
@@ -21,5 +21,18 @@ public class RecipeController {
         model.addAttribute("recipe", this.recipeService.getRecipe(id));
         model.addAttribute("images", this.recipeService.getEncodedImages());
         return "recipe";
+    }
+
+    @RequestMapping("/recipe-form")
+    public String showRecipeForm(Model model) {
+        model.addAttribute("command", new RecipeCommand());
+        return "recipeform";
+    }
+
+    @PostMapping
+    @RequestMapping("/recipe/save")
+    public String saveOrUpdate(@ModelAttribute RecipeCommand command) {
+        RecipeCommand savedCommand = this.recipeService.saveRecipeCommand(command);
+        return "redirect:/recipe?id=" + savedCommand.getId();
     }
 }
