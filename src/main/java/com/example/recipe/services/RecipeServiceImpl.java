@@ -72,7 +72,15 @@ public class RecipeServiceImpl implements RecipeService {
     @Transactional
     public RecipeCommand saveRecipeCommand(RecipeCommand command) {
         Recipe detachedRecipe = this.recipeCommandToRecipe.convert(command);
+        if (this.getRecipe(command.getId()) != null)
+            detachedRecipe.setImage(this.getRecipe(command.getId()).getImage());
         Recipe savedRecipe = this.recipeRepository.save(detachedRecipe);
         return this.recipeToRecipeCommand.convert(savedRecipe);
+    }
+
+    @Override
+    @Transactional
+    public RecipeCommand getCommand(Long id) {
+        return this.recipeToRecipeCommand.convert(this.getRecipe(id));
     }
 }

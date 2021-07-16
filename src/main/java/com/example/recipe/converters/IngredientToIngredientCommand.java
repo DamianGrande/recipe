@@ -9,6 +9,12 @@ import org.springframework.stereotype.Component;
 public class IngredientToIngredientCommand implements Converter<Ingredient, IngredientCommand> {
     @Override
     public IngredientCommand convert(Ingredient ingredient) {
-        return null;
+        IngredientCommand ingredientCommand = new IngredientCommand();
+        ingredientCommand.setAmount(ingredient.getAmount());
+        ingredientCommand.setDescription(ingredient.getDescription());
+        ingredientCommand.setId(ingredient.getId());
+        ingredientCommand.setRecipe(ingredient.getRecipe());
+        ingredientCommand.setUnitOfMeasure(ingredient.getUnitOfMeasure());
+        return ingredientCommand;
     }
 }
