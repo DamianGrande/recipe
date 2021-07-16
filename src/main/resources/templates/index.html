@@ -10,14 +10,21 @@
 <body>
 <h1 style="color: darkslategrey; text-align: center; margin-bottom: 50px;">My Recipes!</h1>
 <div class="container">
-    <div class="row" th:each="recipe : ${recipes}">
-        <a class="btn btn-primary" style="margin-bottom: 10px; color: white" th:href="'/recipe?id='+${recipe.getId()}">
-            <p>
-                <img th:src="@{'data:image/png;base64,'+${images.get(recipe.getId())}}"
-                     style="height: 200px; width: 200px; float: left; margin-right: 5px;'"/>
-            <p th:text="${recipe.getDescription()}" style="text-align: left"></p>
-            </p>
-        </a>
+    <div th:each="recipe : ${recipes}">
+        <div class="row">
+            <a class="btn btn-primary" style="margin-bottom: 10px; color: white"
+               th:href="'/recipe?id='+${recipe.getId()}">
+                <p>
+                    <img th:src="@{'data:image/png;base64,'+${images.get(recipe.getId())}}"
+                         style="height: 200px; width: 200px; float: left; margin-right: 5px;'"/>
+                <p th:text="${recipe.getDescription()}" style="text-align: left"></p>
+                </p>
+            </a>
+        </div>
+        <div class="row">
+            <a class="btn btn-primary" style="margin-bottom: 30px; color: orange"
+               th:href="'/recipe/' + ${recipe.getId()} + '/update'">Update</a>
+        </div>
     </div>
 </div>
 </body>
