@@ -7,6 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @Controller
 public class RecipeController {
     private final RecipeService recipeService;
@@ -17,7 +19,7 @@ public class RecipeController {
     }
 
     @RequestMapping("/recipe")
-    public String showRecipe(@RequestParam Long id, Model model) {
+    public String showRecipe(@RequestParam Long id, Model model) throws IOException {
         model.addAttribute("recipe", this.recipeService.getRecipe(id));
         model.addAttribute("images", this.recipeService.getEncodedImages());
         return "recipe";

@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.ui.Model;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -43,7 +44,7 @@ class IndexControllerTest {
     }
 
     @Test
-    void getIndexPage() {
+    void getIndexPage() throws IOException {
         Set<Recipe> recipes = new HashSet<Recipe>();
         recipes.add(new Recipe());
         recipes.add(new Recipe());

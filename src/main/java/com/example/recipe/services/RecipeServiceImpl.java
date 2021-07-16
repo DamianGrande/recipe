@@ -1,5 +1,6 @@
 package com.example.recipe.services;
 
+import com.example.recipe.bootstrap.DataLoader;
 import com.example.recipe.commands.RecipeCommand;
 import com.example.recipe.converters.RecipeCommandToRecipe;
 import com.example.recipe.converters.RecipeToRecipeCommand;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.HashMap;
 
 @Service
@@ -38,19 +40,17 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public HashMap<Long, String> getEncodedImages() {
-        if (this.images != null)
-            return this.images;
+    public HashMap<Long, String> getEncodedImages() throws IOException {
         this.populateRecipes();
         this.images = new HashMap<Long, String>();
         for (Recipe recipe : this.recipes) {
-            if (recipe.getImage() != null) {
-                byte[] image = new byte[recipe.getImage().length];
-                int index = 0;
-                for (Byte byt : recipe.getImage())
-                    image[index++] = byt;
-                this.images.put(recipe.getId(), Base64.encodeBase64String(image));
-            }
+            if (recipe.getImage() == null)
+                recipe.setImage(DataLoader.getBytesFromImage("static/images/recipes/default.jpeg"));
+            byte[] image = new byte[recipe.getImage().length];
+            int index = 0;
+            for (Byte byt : recipe.getImage())
+                image[index++] = byt;
+            this.images.put(recipe.getId(), Base64.encodeBase64String(image));
         }
         return this.images;
     }

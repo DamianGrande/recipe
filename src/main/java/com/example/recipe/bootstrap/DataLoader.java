@@ -22,6 +22,18 @@ public class DataLoader implements CommandLineRunner {
     private final CategoryRepository categoryRepository;
     private final RecipeRepository recipeRepository;
 
+    public static Byte[] getBytesFromImage(String imagePath) throws IOException {
+        BufferedImage bImage = ImageIO.read(new ClassPathResource(imagePath).getFile());
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ImageIO.write(bImage, "jpg", bos);
+        byte[] data = bos.toByteArray();
+        Byte[] result = new Byte[data.length];
+        int index = 0;
+        for (byte element : data)
+            result[index++] = element;
+        return result;
+    }
+
     @Autowired
     public DataLoader(UnitOfMeasureRepository unitOfMeasureRepository, CategoryRepository categoryRepository, RecipeRepository recipeRepository) {
         this.unitOfMeasureRepository = unitOfMeasureRepository;
@@ -74,7 +86,7 @@ public class DataLoader implements CommandLineRunner {
                 "\n" +
                 "Guacamole: A Classic Mexican Dish\n" +
                 "The word \"guacamole\" and the dip, are both originally from Mexico, where avocados have been cultivated for thousands of years. The name is derived from two Aztec Nahuatl words—ahuacatl (avocado) and molli (sauce).");
-        guacamole.setImage(this.getBytesFromImage("static/images/recipes/guacamole.jpg"));
+        guacamole.setImage(DataLoader.getBytesFromImage("static/images/recipes/guacamole.jpg"));
         guacamole.setDifficulty(Difficulty.MODERATE);
         guacamole.setNotes(guacamoleNotes);
         guacamole.setIngredients(ingredients);
@@ -140,24 +152,12 @@ public class DataLoader implements CommandLineRunner {
                 "Everyone can grab a warm tortilla from the pile and make their own tacos just they way they like them.\n" +
                 "\n" +
                 "You could also easily double or even triple this recipe for a larger party. A taco and a cold beer on a warm day? Now that's living!");
-        chicken.setImage(this.getBytesFromImage("static/images/recipes/chicken.jpeg"));
+        chicken.setImage(DataLoader.getBytesFromImage("static/images/recipes/chicken.jpeg"));
         chicken.setDifficulty(Difficulty.EASY);
         chicken.setNotes(chickenNotes);
         chicken.setIngredients(chickenIngredients);
         chicken.setCategories(chickenCategories);
         this.recipeRepository.save(chicken);
-    }
-
-    private Byte[] getBytesFromImage(String imagePath) throws IOException {
-        BufferedImage bImage = ImageIO.read(new ClassPathResource(imagePath).getFile());
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ImageIO.write(bImage, "jpg", bos);
-        byte[] data = bos.toByteArray();
-        Byte[] result = new Byte[data.length];
-        int index = 0;
-        for (byte element : data)
-            result[index++] = element;
-        return result;
     }
 
     private HashSet<Ingredient> getIngredients(Recipe recipe, int type) {

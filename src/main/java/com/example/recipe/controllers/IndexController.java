@@ -6,6 +6,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.io.IOException;
+
 @Controller
 public class IndexController {
     private final RecipeService recipeService;
@@ -16,7 +18,7 @@ public class IndexController {
     }
 
     @RequestMapping({"", "/", "/index"})
-    public String getIndexPage(Model model) {
+    public String getIndexPage(Model model) throws IOException {
         model.addAttribute("recipes", this.recipeService.getRecipes());
         model.addAttribute("images", this.recipeService.getEncodedImages());
         return "index";
