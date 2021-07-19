@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Setter
@@ -42,4 +43,10 @@ public class Recipe {
     @JoinTable(name = "recipe_category", joinColumns = @JoinColumn(name = "recipe_id"), inverseJoinColumns = @JoinColumn(name = "category_id"))
     private Set<Category> categories;
 
+    public void addIngredient(Ingredient ingredient) {
+        if (this.ingredients == null)
+            this.ingredients = new HashSet<Ingredient>();
+        this.ingredients.add(ingredient);
+        ingredient.setRecipe(this);
+    }
 }
