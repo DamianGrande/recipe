@@ -19,9 +19,12 @@
     </div>
     <div class="row justify-content-center" style="margin-bottom: 10px; margin-top: 10px;">
         <ul>
-            <li th:each="ingredient : ${recipe.getIngredients()}">
-                <p th:text="${ingredient.getAmount().stripTrailingZeros()} +  ' ' +  ${ingredient.getUnityOfMeasure().getDescription()} + ' - ' +  ${ingredient.getDescription()}"></p>
-            </li>
+            <a class="btn btn-primary" style="background-color: white; color: black; border-color: white;"
+               th:href="@{'/recipe/' + ${recipe.getId()} + '/ingredients'}">
+                <li th:each="ingredient : ${recipe.getIngredients()}">
+                    <p th:text="${ingredient.getAmount().stripTrailingZeros()} +  ' ' +  ${ingredient.getUnityOfMeasure().getDescription()} + ' - ' +  ${ingredient.getDescription()}"></p>
+                </li>
+            </a>
         </ul>
     </div>
     <div class="row justify-content-center" style="margin-bottom: 10px; margin-top: 10px;">
