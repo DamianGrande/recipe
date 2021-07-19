@@ -22,8 +22,10 @@
             </a>
         </div>
         <div class="row">
-            <a class="btn btn-primary" style="margin-bottom: 30px; color: orange"
+            <a class="btn btn-primary" style="margin-bottom: 30px; margin-right:30px; color: orange"
                th:href="'/recipe/' + ${recipe.getId()} + '/update'">Update</a>
+            <a class="btn btn-primary" style="margin-bottom: 30px; color: orange"
+               th:href="'/recipe/' + ${recipe.getId()} + '/delete'">Delete</a>
         </div>
     </div>
 </div>

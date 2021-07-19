@@ -14,7 +14,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -60,5 +60,11 @@ class RecipeControllerTest {
         command.setId(2L);
         when(this.recipeService.getCommand(anyLong())).thenReturn(command);
         this.mockMvc.perform(get("/recipe/1/update")).andExpect(status().isOk()).andExpect(view().name("form")).andExpect(model().attributeExists("command"));
+    }
+
+    @Test
+    public void testDeleteAction() throws Exception {
+        this.mockMvc.perform(get("/recipe/1/delete")).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/"));
+        verify(this.recipeService, times(1)).deleteById(anyLong());
     }
 }

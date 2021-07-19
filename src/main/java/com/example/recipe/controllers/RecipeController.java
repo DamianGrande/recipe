@@ -18,6 +18,7 @@ public class RecipeController {
         this.recipeService = recipeService;
     }
 
+    @GetMapping
     @RequestMapping("/recipe")
     public String showRecipe(@RequestParam Long id, Model model) throws IOException {
         model.addAttribute("recipe", this.recipeService.getRecipe(id));
@@ -25,6 +26,7 @@ public class RecipeController {
         return "recipe-detail";
     }
 
+    @GetMapping
     @RequestMapping("/recipe-form")
     public String showRecipeForm(Model model) {
         model.addAttribute("command", new RecipeCommand());
@@ -38,9 +40,17 @@ public class RecipeController {
         return "redirect:/recipe?id=" + savedCommand.getId();
     }
 
+    @GetMapping
     @RequestMapping("/recipe/{id}/update")
     public String updateRecipe(@PathVariable(name = "id") Long id, Model model) {
         model.addAttribute("command", this.recipeService.getCommand(id));
         return "form";
+    }
+
+    @GetMapping
+    @RequestMapping("recipe/{id}/delete")
+    public String deleteRecipe(@PathVariable Long id) {
+        this.recipeService.deleteById(id);
+        return "redirect:/";
     }
 }
