@@ -20,12 +20,4 @@ public class Ingredient {
 
     @ManyToOne
     private Recipe recipe;
-
-    public UnitOfMeasure getUnityOfMeasure() {
-        return unitOfMeasure;
-    }
-
-    public void setUnityOfMeasure(UnitOfMeasure unitOfMeasure) {
-        this.unitOfMeasure = unitOfMeasure;
-    }
 }

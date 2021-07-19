@@ -1,5 +1,6 @@
 package com.example.recipe.domain;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -36,6 +37,7 @@ public class Recipe {
     @OneToOne(cascade = CascadeType.ALL)
     private Notes notes;
 
+    @Getter(AccessLevel.NONE)
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "recipe", fetch = FetchType.EAGER)
     private Set<Ingredient> ingredients;
 
@@ -48,5 +50,11 @@ public class Recipe {
             this.ingredients = new HashSet<Ingredient>();
         this.ingredients.add(ingredient);
         ingredient.setRecipe(this);
+    }
+
+    public Set<Ingredient> getIngredients() {
+        if (this.ingredients == null)
+            return new HashSet<Ingredient>();
+        return this.ingredients;
     }
 }

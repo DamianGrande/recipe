@@ -22,7 +22,7 @@
            th:href="@{'/recipe/' + ${recipe.getId()} + '/ingredients'}">
             <ul>
                 <li th:each="ingredient : ${recipe.getIngredients()}">
-                    <p th:text="${ingredient.getAmount().stripTrailingZeros()} +  ' ' +  ${ingredient.getUnityOfMeasure().getDescription()} + ' - ' +  ${ingredient.getDescription()}"></p>
+                    <p th:text="${ingredient.getAmount().stripTrailingZeros()} +  ' ' +  ${ingredient.getUnitOfMeasure().getDescription()} + ' - ' +  ${ingredient.getDescription()}"></p>
                 </li>
             </ul>
         </a>
