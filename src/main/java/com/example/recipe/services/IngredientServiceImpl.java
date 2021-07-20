@@ -69,4 +69,14 @@ public class IngredientServiceImpl implements IngredientService {
         Recipe savedRecipe = this.recipeRepository.save(recipe);
         return this.ingredientToIngredientCommand.convert(savedRecipe.getIngredients().stream().filter(ingredient -> ingredient.getId().equals(ingredientCommand.getId())).findFirst().get());
     }
+
+    @Override
+    @Transactional
+    public void deleteIngredient(Long recipeId, Long ingredientId) {
+        Recipe recipe = this.recipeRepository.findById(recipeId).orElseThrow();
+        Ingredient ingredientToDelete = recipe.getIngredients().stream().filter(ingredient -> ingredient.getId().equals(ingredientId)).findFirst().orElseThrow();
+        this.ingredientRepository.deleteById(ingredientToDelete.getId());
+        recipe.getIngredients().removeIf(ingredient -> ingredient.getId().equals(ingredientToDelete.getId()));
+        this.recipeRepository.save(recipe);
+    }
 }

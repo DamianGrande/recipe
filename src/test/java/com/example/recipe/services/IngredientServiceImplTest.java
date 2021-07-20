@@ -89,4 +89,35 @@ class IngredientServiceImplTest {
         verify(this.recipeRepository, times(1)).findById(anyLong());
         verify(this.recipeRepository, times(1)).save(any(Recipe.class));
     }
+
+    @Test
+    public void deleteIngredient() throws Exception {
+        Recipe recipe = new Recipe();
+        recipe.setId(1L);
+        Ingredient ingredient = new Ingredient();
+        ingredient.setId(3L);
+        recipe.addIngredient(ingredient);
+        when(this.recipeRepository.findById(1L)).thenReturn(Optional.of(recipe));
+        this.ingredientService.deleteIngredient(1L, 3L);
+        verify(this.ingredientRepository, times(1)).deleteById(3L);
+        assertTrue(recipe.getIngredients().isEmpty());
+        verify(this.recipeRepository, times(1)).save(recipe);
+    }
+
+    @Test
+    public void deleteIngredientNotExistentRecipe() throws Exception {
+        when(this.recipeRepository.findById(anyLong())).thenReturn(null);
+        assertThrows(Exception.class, () -> this.ingredientService.deleteIngredient(1L, 3L));
+    }
+
+    @Test
+    public void deleteIngredientNotExistentIngredient() throws Exception {
+        Recipe recipe = new Recipe();
+        recipe.setId(1L);
+        Ingredient ingredient = new Ingredient();
+        ingredient.setId(3L);
+        recipe.addIngredient(ingredient);
+        when(this.recipeRepository.findById(1L)).thenReturn(Optional.of(recipe));
+        assertThrows(Exception.class, () -> this.ingredientService.deleteIngredient(1L, 2L));
+    }
 }

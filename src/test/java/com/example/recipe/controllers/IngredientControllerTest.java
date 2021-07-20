@@ -89,4 +89,10 @@ class IngredientControllerTest {
         this.mockMvc.perform(get("/recipe/1/ingredient/new")).andExpect(status().isOk()).andExpect(view().name("recipe/ingredient/form")).andExpect(model().attributeExists("ingredient")).andExpect(model().attributeExists("uomList"));
         verify(this.recipeService, times(1)).getCommand(anyLong());
     }
+
+    @Test
+    public void deleteIngredient() throws Exception {
+        this.mockMvc.perform(get("/recipe/1/ingredient/3/delete")).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/recipe/1/ingredients"));
+        verify(this.ingredientService, times(1)).deleteIngredient(1L, 3L);
+    }
 }
