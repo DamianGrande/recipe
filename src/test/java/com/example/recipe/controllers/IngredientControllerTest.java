@@ -2,6 +2,7 @@ package com.example.recipe.controllers;
 
 import com.example.recipe.commands.IngredientCommand;
 import com.example.recipe.commands.RecipeCommand;
+import com.example.recipe.converters.RecipeCommandToRecipe;
 import com.example.recipe.domain.Recipe;
 import com.example.recipe.services.IngredientService;
 import com.example.recipe.services.RecipeService;
@@ -32,6 +33,9 @@ class IngredientControllerTest {
     @Mock
     UnitOfMeasureService unitOfMeasureService;
 
+    @Mock
+    RecipeCommandToRecipe recipeCommandToRecipe;
+
     IngredientController controller;
 
     MockMvc mockMvc;
@@ -39,7 +43,7 @@ class IngredientControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        this.controller = new IngredientController(this.recipeService, this.ingredientService, unitOfMeasureService);
+        this.controller = new IngredientController(this.recipeService, this.ingredientService, unitOfMeasureService, recipeCommandToRecipe);
         this.mockMvc = MockMvcBuilders.standaloneSetup(this.controller).build();
     }
 
@@ -74,5 +78,15 @@ class IngredientControllerTest {
         command.getRecipe().setId(2L);
         when(this.ingredientService.saveIngredientCommand(any())).thenReturn(command);
         this.mockMvc.perform(post("/recipe/2/ingredient").contentType(MediaType.APPLICATION_FORM_URLENCODED).param("id", "").param("description", "some string")).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/recipe/2/ingredient/3/show"));
+    }
+
+    @Test
+    public void newIngredientForm() throws Exception {
+        RecipeCommand recipeCommand = new RecipeCommand();
+        recipeCommand.setId(1L);
+        when(this.recipeService.getCommand(anyLong())).thenReturn(recipeCommand);
+        when(this.unitOfMeasureService.listAllUoms()).thenReturn(new HashSet<>());
+        this.mockMvc.perform(get("/recipe/1/ingredient/new")).andExpect(status().isOk()).andExpect(view().name("recipe/ingredient/form")).andExpect(model().attributeExists("ingredient")).andExpect(model().attributeExists("uomList"));
+        verify(this.recipeService, times(1)).getCommand(anyLong());
     }
 }

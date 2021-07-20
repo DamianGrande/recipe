@@ -5,6 +5,7 @@ import com.example.recipe.converters.IngredientCommandToIngredient;
 import com.example.recipe.converters.IngredientToIngredientCommand;
 import com.example.recipe.domain.Ingredient;
 import com.example.recipe.domain.Recipe;
+import com.example.recipe.repositories.IngredientRepository;
 import com.example.recipe.repositories.RecipeRepository;
 import com.example.recipe.repositories.UnitOfMeasureRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -21,13 +22,15 @@ public class IngredientServiceImpl implements IngredientService {
     private final IngredientCommandToIngredient ingredientCommandToIngredient;
     private final RecipeRepository recipeRepository;
     private final UnitOfMeasureRepository unitOfMeasureRepository;
+    private final IngredientRepository ingredientRepository;
 
     @Autowired
-    public IngredientServiceImpl(IngredientToIngredientCommand ingredientToIngredientCommand, IngredientCommandToIngredient ingredientCommandToIngredient, RecipeRepository recipeRepository, UnitOfMeasureRepository unitOfMeasureRepository) {
+    public IngredientServiceImpl(IngredientToIngredientCommand ingredientToIngredientCommand, IngredientCommandToIngredient ingredientCommandToIngredient, RecipeRepository recipeRepository, UnitOfMeasureRepository unitOfMeasureRepository, IngredientRepository ingredientRepository) {
         this.ingredientToIngredientCommand = ingredientToIngredientCommand;
         this.ingredientCommandToIngredient = ingredientCommandToIngredient;
         this.recipeRepository = recipeRepository;
         this.unitOfMeasureRepository = unitOfMeasureRepository;
+        this.ingredientRepository = ingredientRepository;
     }
 
     @Override
@@ -57,8 +60,12 @@ public class IngredientServiceImpl implements IngredientService {
             ingredientFound.setDescription(ingredientCommand.getDescription());
             ingredientFound.setAmount(ingredientCommand.getAmount());
             ingredientFound.setUnitOfMeasure(this.unitOfMeasureRepository.findById(ingredientCommand.getUnitOfMeasure().getId()).orElseThrow(() -> new RuntimeException("UOM NOT FOUND.")));
-        } else
-            recipe.addIngredient(this.ingredientCommandToIngredient.convert(ingredientCommand));
+        } else {
+            Ingredient newIngredient = this.ingredientCommandToIngredient.convert(ingredientCommand);
+            recipe.addIngredient(newIngredient);
+            newIngredient = this.ingredientRepository.save(newIngredient);
+            ingredientCommand.setId(newIngredient.getId());
+        }
         Recipe savedRecipe = this.recipeRepository.save(recipe);
         return this.ingredientToIngredientCommand.convert(savedRecipe.getIngredients().stream().filter(ingredient -> ingredient.getId().equals(ingredientCommand.getId())).findFirst().get());
     }

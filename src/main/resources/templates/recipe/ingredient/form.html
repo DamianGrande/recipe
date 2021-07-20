@@ -40,7 +40,7 @@
                                     <label>UOM:</label>
                                     <select class="form-control" name="uomId">
                                         <option th:each="uomEach : ${uomList}" th:value="${uomEach.id}"
-                                                th:selected="${uomEach.description == (ingredient.unitOfMeasure.description)}"
+                                                th:selected="${uomEach.description == (ingredient.getUnitOfMeasure().getDescription())}"
                                                 th:text="${uomEach.description}">Each
                                         </option>
                                     </select>

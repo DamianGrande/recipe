@@ -2,6 +2,8 @@ package com.example.recipe.controllers;
 
 import com.example.recipe.commands.IngredientCommand;
 
+import com.example.recipe.commands.RecipeCommand;
+import com.example.recipe.converters.RecipeCommandToRecipe;
 import com.example.recipe.services.IngredientService;
 import com.example.recipe.services.RecipeService;
 import com.example.recipe.services.UnitOfMeasureService;
@@ -16,12 +18,14 @@ public class IngredientController {
     private final RecipeService recipeService;
     private final IngredientService ingredientService;
     private final UnitOfMeasureService unitOfMeasureService;
+    private final RecipeCommandToRecipe recipeCommandToRecipe;
 
     @Autowired
-    public IngredientController(RecipeService recipeService, IngredientService ingredientService, UnitOfMeasureService unitOfMeasureService) {
+    public IngredientController(RecipeService recipeService, IngredientService ingredientService, UnitOfMeasureService unitOfMeasureService, RecipeCommandToRecipe recipeCommandToRecipe) {
         this.recipeService = recipeService;
         this.ingredientService = ingredientService;
         this.unitOfMeasureService = unitOfMeasureService;
+        this.recipeCommandToRecipe = recipeCommandToRecipe;
     }
 
     @GetMapping
@@ -55,5 +59,16 @@ public class IngredientController {
         System.out.println("str: " + uomId);
         ingredient.setUnitOfMeasure(this.unitOfMeasureService.findById(uomId));
         return "redirect:/recipe/" + id + "/ingredient/" + this.ingredientService.saveIngredientCommand(ingredient).getId() + "/show";
+    }
+
+    @GetMapping
+    @RequestMapping("/recipe/{id}/ingredient/new")
+    public String newRecipeForm(@PathVariable Long id, Model model) {
+        RecipeCommand recipeCommand = this.recipeService.getCommand(id);
+        IngredientCommand ingredientCommand = new IngredientCommand();
+        ingredientCommand.setRecipe(this.recipeCommandToRecipe.convert(recipeCommand));
+        model.addAttribute("ingredient", ingredientCommand);
+        model.addAttribute("uomList", this.unitOfMeasureService.listAllUoms());
+        return "recipe/ingredient/form";
     }
 }

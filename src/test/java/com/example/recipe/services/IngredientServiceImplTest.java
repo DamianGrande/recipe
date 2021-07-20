@@ -5,6 +5,7 @@ import com.example.recipe.converters.IngredientCommandToIngredient;
 import com.example.recipe.converters.IngredientToIngredientCommand;
 import com.example.recipe.domain.Ingredient;
 import com.example.recipe.domain.Recipe;
+import com.example.recipe.repositories.IngredientRepository;
 import com.example.recipe.repositories.RecipeRepository;
 import com.example.recipe.repositories.UnitOfMeasureRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,6 +29,9 @@ class IngredientServiceImplTest {
     @Mock
     UnitOfMeasureRepository unitOfMeasureRepository;
 
+    @Mock
+    IngredientRepository ingredientRepository;
+
     IngredientService ingredientService;
 
     public IngredientServiceImplTest() {
@@ -38,7 +42,7 @@ class IngredientServiceImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        this.ingredientService = new IngredientServiceImpl(this.ingredientToIngredientCommand, ingredientCommandToIngredient, this.recipeRepository, unitOfMeasureRepository);
+        this.ingredientService = new IngredientServiceImpl(this.ingredientToIngredientCommand, ingredientCommandToIngredient, this.recipeRepository, unitOfMeasureRepository, ingredientRepository);
     }
 
     @Test
@@ -79,6 +83,7 @@ class IngredientServiceImplTest {
         savedRecipe.getIngredients().iterator().next().setId(3L);
         when(this.recipeRepository.findById(anyLong())).thenReturn(recipeOptional);
         when(this.recipeRepository.save(any())).thenReturn(savedRecipe);
+        when(this.ingredientRepository.save(any())).thenReturn(this.ingredientCommandToIngredient.convert(command));
         IngredientCommand savedCommand = this.ingredientService.saveIngredientCommand(command);
         assertEquals(3L, savedCommand.getId());
         verify(this.recipeRepository, times(1)).findById(anyLong());
