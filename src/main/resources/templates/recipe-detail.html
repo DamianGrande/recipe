@@ -8,10 +8,13 @@
 </head>
 <body>
 <div class="container">
-    <div class="row justify-content-center" style="margin-bottom: 10px; margin-top: 10px;">
+    <div class="row justify-content-center" style="margin-bottom: 5px; margin-top: 10px;">
         <img th:src="@{'data:image/png;base64,'+${images.get(recipe.getId())}}"/>
     </div>
-    <div class="row justify-content-center" style="margin-bottom: 10px; margin-top: 10px;">
+    <div class="row justify-content-center">
+        <a class="btn btn-primary" th:href="@{'/recipe/' + ${recipe.getId()} + '/image'}">Change Image</a>
+    </div>
+    <div class="row justify-content-center" style="margin-bottom: 10px; margin-top: 20px;">
         <p th:text="${recipe.getDescription()}"></p>
     </div>
     <div class="row justify-content-center" style="margin-bottom: 10px; margin-top: 10px;">
