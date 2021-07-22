@@ -29,7 +29,7 @@ public class ImageController {
     }
 
     @PostMapping("/recipe/{id}/image")
-    public String handleImagePost(@PathVariable Long id, @RequestParam("imageFile") MultipartFile file) {
+    public String handleImagePost(@PathVariable Long id, @RequestParam("imageFile") MultipartFile file) throws Exception {
         this.imageService.saveImageFile(id, file);
         return "redirect:/recipe/?id=" + id;
     }
