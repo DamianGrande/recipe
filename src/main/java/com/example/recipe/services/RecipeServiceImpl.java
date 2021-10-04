@@ -62,7 +62,7 @@ public class RecipeServiceImpl implements RecipeService {
         for (Recipe recipe : this.recipes)
             if (recipe.getId().equals(id))
                 return recipe;
-        throw new NotFoundException("Recipe Not Found.");
+        throw new NotFoundException("Recipe Not Found for id value: " + id);
     }
 
     private void populateRecipes() {
