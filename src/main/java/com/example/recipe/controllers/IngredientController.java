@@ -4,6 +4,7 @@ import com.example.recipe.commands.IngredientCommand;
 
 import com.example.recipe.commands.RecipeCommand;
 import com.example.recipe.converters.RecipeCommandToRecipe;
+import com.example.recipe.exceptions.NotFoundException;
 import com.example.recipe.services.IngredientService;
 import com.example.recipe.services.RecipeService;
 import com.example.recipe.services.UnitOfMeasureService;
@@ -29,7 +30,7 @@ public class IngredientController {
     }
 
     @GetMapping("/recipe/{id}/ingredients")
-    public String listIngredients(@PathVariable Long id, Model model) {
+    public String listIngredients(@PathVariable Long id, Model model) throws NotFoundException {
         model.addAttribute("recipe", this.recipeService.getCommand(id));
         return "recipe/ingredient/list";
     }
@@ -55,7 +56,7 @@ public class IngredientController {
     }
 
     @GetMapping("/recipe/{id}/ingredient/new")
-    public String newRecipeForm(@PathVariable Long id, Model model) {
+    public String newRecipeForm(@PathVariable Long id, Model model) throws NotFoundException {
         RecipeCommand recipeCommand = this.recipeService.getCommand(id);
         IngredientCommand ingredientCommand = new IngredientCommand();
         ingredientCommand.setRecipe(this.recipeCommandToRecipe.convert(recipeCommand));

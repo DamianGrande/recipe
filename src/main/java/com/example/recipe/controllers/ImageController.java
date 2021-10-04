@@ -1,5 +1,6 @@
 package com.example.recipe.controllers;
 
+import com.example.recipe.exceptions.NotFoundException;
 import com.example.recipe.services.ImageService;
 import com.example.recipe.services.RecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class ImageController {
     }
 
     @GetMapping("/recipe/{id}/image")
-    public String getImageForm(@PathVariable Long id, Model model) {
+    public String getImageForm(@PathVariable Long id, Model model) throws NotFoundException {
         model.addAttribute("recipe", this.recipeService.getCommand(id));
         return "image-upload-form";
     }

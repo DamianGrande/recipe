@@ -5,6 +5,7 @@ import com.example.recipe.commands.RecipeCommand;
 import com.example.recipe.converters.RecipeCommandToRecipe;
 import com.example.recipe.converters.RecipeToRecipeCommand;
 import com.example.recipe.domain.Recipe;
+import com.example.recipe.exceptions.NotFoundException;
 import com.example.recipe.repositories.RecipeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,12 +57,12 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public Recipe getRecipe(Long id) {
+    public Recipe getRecipe(Long id) throws NotFoundException {
         this.populateRecipes();
         for (Recipe recipe : this.recipes)
             if (recipe.getId().equals(id))
                 return recipe;
-        return null;
+        throw new NotFoundException("Recipe Not Found.");
     }
 
     private void populateRecipes() {
@@ -70,7 +71,7 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     @Transactional
-    public RecipeCommand saveRecipeCommand(RecipeCommand command) {
+    public RecipeCommand saveRecipeCommand(RecipeCommand command) throws NotFoundException {
         Recipe detachedRecipe = this.recipeCommandToRecipe.convert(command);
         if (this.getRecipe(command.getId()) != null)
             detachedRecipe.setImage(this.getRecipe(command.getId()).getImage());
@@ -80,7 +81,7 @@ public class RecipeServiceImpl implements RecipeService {
 
     @Override
     @Transactional
-    public RecipeCommand getCommand(Long id) {
+    public RecipeCommand getCommand(Long id) throws NotFoundException {
         return this.recipeToRecipeCommand.convert(this.getRecipe(id));
     }
 

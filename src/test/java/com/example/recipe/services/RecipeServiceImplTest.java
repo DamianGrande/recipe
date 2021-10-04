@@ -3,6 +3,7 @@ package com.example.recipe.services;
 import com.example.recipe.converters.RecipeCommandToRecipe;
 import com.example.recipe.converters.RecipeToRecipeCommand;
 import com.example.recipe.domain.Recipe;
+import com.example.recipe.exceptions.NotFoundException;
 import com.example.recipe.repositories.RecipeRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.HashSet;
+import java.util.LinkedList;
 
 import static org.mockito.Mockito.*;
 
@@ -49,9 +51,15 @@ class RecipeServiceImplTest {
     }
 
     @Test
-    public void testDeleteById() {
+    public void deleteById() {
         Long idToDelete = 2L;
         this.recipeService.deleteById(idToDelete);
         verify(this.recipeRepository, times(1)).deleteById(anyLong());
+    }
+
+    @Test
+    public void getRecipeByIdNotFound() {
+        when(this.recipeRepository.findAll()).thenReturn(new LinkedList<>());
+        Assertions.assertThrows(NotFoundException.class, () -> this.recipeService.getRecipe(1L));
     }
 }
