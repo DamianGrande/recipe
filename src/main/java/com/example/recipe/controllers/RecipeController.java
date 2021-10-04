@@ -4,9 +4,11 @@ import com.example.recipe.commands.RecipeCommand;
 import com.example.recipe.exceptions.NotFoundException;
 import com.example.recipe.services.RecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
 
@@ -17,6 +19,14 @@ public class RecipeController {
     @Autowired
     public RecipeController(RecipeService recipeService) {
         this.recipeService = recipeService;
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NotFoundException.class)
+    public ModelAndView handleNotFound() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("404error");
+        return modelAndView;
     }
 
     @GetMapping("/recipe")

@@ -2,6 +2,7 @@ package com.example.recipe.controllers;
 
 import com.example.recipe.commands.RecipeCommand;
 import com.example.recipe.domain.Recipe;
+import com.example.recipe.exceptions.NotFoundException;
 import com.example.recipe.services.RecipeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -66,5 +66,11 @@ class RecipeControllerTest {
     public void testDeleteAction() throws Exception {
         this.mockMvc.perform(get("/recipe/1/delete")).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/"));
         verify(this.recipeService, times(1)).deleteById(anyLong());
+    }
+
+    @Test
+    public void GetRecipeNotFound() throws Exception {
+        when(this.recipeService.getRecipe(anyLong())).thenThrow(NotFoundException.class);
+        this.mockMvc.perform(get("/recipe?id=1")).andExpect(status().isNotFound()).andExpect(view().name("404error"));
     }
 }
