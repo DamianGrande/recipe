@@ -73,4 +73,9 @@ class RecipeControllerTest {
         when(this.recipeService.getRecipe(anyLong())).thenThrow(NotFoundException.class);
         this.mockMvc.perform(get("/recipe?id=1")).andExpect(status().isNotFound()).andExpect(view().name("404error"));
     }
+
+    @Test
+    public void GetBadRequest() throws Exception {
+        this.mockMvc.perform(get("/recipe?id=asd")).andExpect(status().isBadRequest()).andExpect(view().name("400error"));
+    }
 }
