@@ -46,7 +46,7 @@ public class RecipeController {
     }
 
     @PostMapping("/recipe/save")
-    public String saveOrUpdate(@Valid @ModelAttribute("recipe") RecipeCommand command, BindingResult bindingResult) throws NotFoundException {
+    public String saveOrUpdate(@Valid @ModelAttribute("command") RecipeCommand command, BindingResult bindingResult) throws NotFoundException {
         if (bindingResult.hasErrors())
             return "form";
         RecipeCommand savedCommand = this.recipeService.saveRecipeCommand(command);
