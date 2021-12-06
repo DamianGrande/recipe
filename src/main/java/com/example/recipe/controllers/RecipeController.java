@@ -7,9 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.validation.Valid;
 import java.io.IOException;
 
 @Controller
@@ -44,7 +46,9 @@ public class RecipeController {
     }
 
     @PostMapping("/recipe/save")
-    public String saveOrUpdate(@ModelAttribute RecipeCommand command) throws NotFoundException {
+    public String saveOrUpdate(@Valid @ModelAttribute("recipe") RecipeCommand command, BindingResult bindingResult) throws NotFoundException {
+        if (bindingResult.hasErrors())
+            return "form";
         RecipeCommand savedCommand = this.recipeService.saveRecipeCommand(command);
         return "redirect:/recipe?id=" + savedCommand.getId();
     }
