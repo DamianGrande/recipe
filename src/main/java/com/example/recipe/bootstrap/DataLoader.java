@@ -6,6 +6,7 @@ import com.example.recipe.repositories.RecipeRepository;
 import com.example.recipe.repositories.UnitOfMeasureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,7 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 
 @Component
+@Profile("default")
 public class DataLoader implements CommandLineRunner {
     private final UnitOfMeasureRepository unitOfMeasureRepository;
     private final CategoryRepository categoryRepository;
