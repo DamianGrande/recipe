@@ -39,21 +39,17 @@ class ImageControllerTest {
     @Test
     void getImageForm() throws Exception {
         RecipeCommand command = new RecipeCommand();
-        command.setId(1L);
-        when(this.recipeService.getCommand(anyLong())).thenReturn(command);
+        command.setId("1");
+        when(this.recipeService.getCommand(anyString())).thenReturn(command);
         this.mockMvc.perform(get("/recipe/1/image")).andExpect(status().isOk()).andExpect(model().attributeExists("recipe")).andExpect(view().name("image-upload-form"));
-        verify(this.recipeService, times(1)).getCommand(anyLong());
+        verify(this.recipeService, times(1)).getCommand(anyString());
     }
 
     @Test
     void handleImagePost() throws Exception {
         MockMultipartFile multipartFile = new MockMultipartFile("imageFile", "testing.txt", "text/plain", "Spring Framework Guru".getBytes());
         this.mockMvc.perform(multipart("/recipe/1/image").file(multipartFile)).andExpect(status().is3xxRedirection()).andExpect(header().string("Location", "/recipe/?id=1"));
-        verify(this.imageService, times(1)).saveImageFile(anyLong(), any());
+        verify(this.imageService, times(1)).saveImageFile(anyString(), any());
     }
 
-    @Test
-    public void testGetImageNumberFormatException() throws Exception {
-        this.mockMvc.perform(get("/recipe/asdf/image")).andExpect(status().isBadRequest()).andExpect(view().name("400error"));
-    }
 }

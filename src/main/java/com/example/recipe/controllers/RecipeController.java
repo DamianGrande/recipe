@@ -33,7 +33,7 @@ public class RecipeController {
     }
 
     @GetMapping("/recipe")
-    public String showRecipe(@RequestParam Long id, Model model) throws IOException, NotFoundException {
+    public String showRecipe(@RequestParam String id, Model model) throws IOException, NotFoundException {
         model.addAttribute("recipe", this.recipeService.getRecipe(id));
         model.addAttribute("images", this.recipeService.getEncodedImages());
         return "recipe-detail";
@@ -54,13 +54,13 @@ public class RecipeController {
     }
 
     @GetMapping("/recipe/{id}/update")
-    public String updateRecipe(@PathVariable(name = "id") Long id, Model model) throws NotFoundException {
+    public String updateRecipe(@PathVariable(name = "id") String id, Model model) throws NotFoundException {
         model.addAttribute("command", this.recipeService.getCommand(id));
         return "form";
     }
 
     @GetMapping("recipe/{id}/delete")
-    public String deleteRecipe(@PathVariable Long id) {
+    public String deleteRecipe(@PathVariable String id) {
         this.recipeService.deleteById(id);
         return "redirect:/";
     }

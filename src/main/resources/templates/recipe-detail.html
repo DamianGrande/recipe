@@ -18,6 +18,12 @@
         <p th:text="${recipe.getDescription()}"></p>
     </div>
     <div class="row justify-content-center" style="margin-bottom: 10px; margin-top: 10px;">
+        <h3>Categories</h3>
+    </div>
+    <ul th:each="category : ${recipe.categories}">
+        <li th:text="${category.description}"/>
+    </ul>
+    <div class="row justify-content-center" style="margin-bottom: 10px; margin-top: 10px;">
         <h3>Ingredients</h3>
     </div>
     <div class="row justify-content-center" style="margin-bottom: 10px; margin-top: 10px;">

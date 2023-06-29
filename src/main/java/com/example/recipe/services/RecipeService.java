@@ -10,13 +10,13 @@ import java.util.HashMap;
 public interface RecipeService {
     Iterable<Recipe> getRecipes();
 
-    HashMap<Long, String> getEncodedImages() throws IOException;
+    HashMap<String, String> getEncodedImages() throws IOException;
 
-    Recipe getRecipe(Long id) throws NotFoundException;
+    Recipe getRecipe(String id) throws NotFoundException;
 
     RecipeCommand saveRecipeCommand(RecipeCommand command) throws NotFoundException;
 
-    RecipeCommand getCommand(Long id) throws NotFoundException;
+    RecipeCommand getCommand(String id) throws NotFoundException;
 
-    void deleteById(Long id);
+    void deleteById(String id);
 }

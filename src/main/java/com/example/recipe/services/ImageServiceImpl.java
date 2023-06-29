@@ -16,7 +16,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public void saveImageFile(Long recipeId, MultipartFile file) throws Exception {
+    public void saveImageFile(String recipeId, MultipartFile file) throws Exception {
         Recipe recipe = this.recipeRepository.findById(recipeId).get();
         Byte[] image = new Byte[file.getBytes().length];
         for (int i = 0; i < file.getBytes().length; i++)

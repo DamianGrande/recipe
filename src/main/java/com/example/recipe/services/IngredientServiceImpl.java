@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Slf4j
@@ -34,7 +33,7 @@ public class IngredientServiceImpl implements IngredientService {
     }
 
     @Override
-    public IngredientCommand findByRecipeIdAndIngredientId(Long recipeId, Long ingredientId) {
+    public IngredientCommand findByRecipeIdAndIngredientId(String recipeId, String ingredientId) {
         Optional<Recipe> recipeOptional = this.recipeRepository.findById(recipeId);
         if (recipeOptional.isEmpty())
             log.error("Recipe id not found. Id: " + recipeId);
@@ -42,15 +41,16 @@ public class IngredientServiceImpl implements IngredientService {
         Optional<IngredientCommand> ingredientCommandOptional = recipe.getIngredients().stream().filter(ingredient -> ingredient.getId().equals(ingredientId)).map(this.ingredientToIngredientCommand::convert).findFirst();
         if (ingredientCommandOptional.isEmpty())
             log.error("Ingredient id not found: " + ingredientId);
-        return ingredientCommandOptional.get();
+        IngredientCommand ingredientCommand = ingredientCommandOptional.get();
+        ingredientCommand.setRecipeId(recipeId);
+        return ingredientCommand;
     }
 
     @Override
-    @Transactional
     public IngredientCommand saveIngredientCommand(IngredientCommand ingredientCommand) {
-        Optional<Recipe> recipeOptional = this.recipeRepository.findById(ingredientCommand.getRecipe().getId());
+        Optional<Recipe> recipeOptional = this.recipeRepository.findById(ingredientCommand.getRecipeId());
         if (recipeOptional.isEmpty()) {
-            log.error("Recipe not found for id: " + ingredientCommand.getRecipe().getId());
+            log.error("Recipe not found for id: " + ingredientCommand.getRecipeId());
             return new IngredientCommand();
         }
         Recipe recipe = recipeOptional.get();
@@ -62,6 +62,7 @@ public class IngredientServiceImpl implements IngredientService {
             ingredientFound.setUnitOfMeasure(this.unitOfMeasureRepository.findById(ingredientCommand.getUnitOfMeasure().getId()).orElseThrow(() -> new RuntimeException("UOM NOT FOUND.")));
         } else {
             Ingredient newIngredient = this.ingredientCommandToIngredient.convert(ingredientCommand);
+            newIngredient.setId(null);
             recipe.addIngredient(newIngredient);
             newIngredient = this.ingredientRepository.save(newIngredient);
             ingredientCommand.setId(newIngredient.getId());
@@ -71,8 +72,7 @@ public class IngredientServiceImpl implements IngredientService {
     }
 
     @Override
-    @Transactional
-    public void deleteIngredient(Long recipeId, Long ingredientId) {
+    public void deleteIngredient(String recipeId, String ingredientId) {
         Recipe recipe = this.recipeRepository.findById(recipeId).orElseThrow();
         Ingredient ingredientToDelete = recipe.getIngredients().stream().filter(ingredient -> ingredient.getId().equals(ingredientId)).findFirst().orElseThrow();
         this.ingredientRepository.deleteById(ingredientToDelete.getId());

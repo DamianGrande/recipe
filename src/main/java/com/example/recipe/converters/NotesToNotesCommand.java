@@ -9,6 +9,9 @@ import org.springframework.stereotype.Component;
 public class NotesToNotesCommand implements Converter<Notes, NotesCommand> {
     @Override
     public NotesCommand convert(Notes notes) {
-        return null;
+        NotesCommand command = new NotesCommand();
+        command.setId(notes.getId());
+        command.setRecipeNotes(notes.getRecipeNotes());
+        return command;
     }
 }

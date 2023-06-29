@@ -3,9 +3,10 @@ package com.example.recipe.services;
 import com.example.recipe.commands.IngredientCommand;
 
 public interface IngredientService {
-    IngredientCommand findByRecipeIdAndIngredientId(Long recipeId, Long ingredientId);
+    IngredientCommand findByRecipeIdAndIngredientId(String recipeId, String ingredientId);
 
     IngredientCommand saveIngredientCommand(IngredientCommand ingredientCommand);
 
-    void deleteIngredient(Long recipeId, Long ingredientId);
+    void deleteIngredient(String recipeId, String ingredientId);
+
 }

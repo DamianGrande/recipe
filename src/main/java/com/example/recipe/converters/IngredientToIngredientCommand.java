@@ -10,10 +10,10 @@ public class IngredientToIngredientCommand implements Converter<Ingredient, Ingr
     @Override
     public IngredientCommand convert(Ingredient ingredient) {
         IngredientCommand ingredientCommand = new IngredientCommand();
+        ingredientCommand.setId(ingredient.getId());
         ingredientCommand.setAmount(ingredient.getAmount());
         ingredientCommand.setDescription(ingredient.getDescription());
         ingredientCommand.setId(ingredient.getId());
-        ingredientCommand.setRecipe(ingredient.getRecipe());
         ingredientCommand.setUnitOfMeasure(ingredient.getUnitOfMeasure());
         return ingredientCommand;
     }

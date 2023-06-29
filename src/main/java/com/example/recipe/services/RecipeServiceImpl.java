@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import org.apache.commons.codec.binary.Base64;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -24,7 +23,7 @@ public class RecipeServiceImpl implements RecipeService {
     private final RecipeCommandToRecipe recipeCommandToRecipe;
     private final RecipeToRecipeCommand recipeToRecipeCommand;
     private Iterable<Recipe> recipes;
-    private HashMap<Long, String> images;
+    private HashMap<String, String> images;
 
     @Autowired
     public RecipeServiceImpl(RecipeRepository recipeRepository, RecipeCommandToRecipe recipeCommandToRecipe, RecipeToRecipeCommand recipeToRecipeCommand) {
@@ -41,9 +40,9 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public HashMap<Long, String> getEncodedImages() throws IOException {
+    public HashMap<String, String> getEncodedImages() throws IOException {
         this.populateRecipes();
-        this.images = new HashMap<Long, String>();
+        this.images = new HashMap<String, String>();
         for (Recipe recipe : this.recipes) {
             if (recipe.getImage() == null)
                 recipe.setImage(DataLoader.getBytesFromImage("static/images/recipes/default.jpeg"));
@@ -57,7 +56,7 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    public Recipe getRecipe(Long id) throws NotFoundException {
+    public Recipe getRecipe(String id) throws NotFoundException {
         this.populateRecipes();
         for (Recipe recipe : this.recipes)
             if (recipe.getId().equals(id))
@@ -70,7 +69,6 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    @Transactional
     public RecipeCommand saveRecipeCommand(RecipeCommand command) throws NotFoundException {
         Recipe detachedRecipe = this.recipeCommandToRecipe.convert(command);
         if (this.getRecipe(command.getId()) != null)
@@ -80,13 +78,12 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
-    @Transactional
-    public RecipeCommand getCommand(Long id) throws NotFoundException {
+    public RecipeCommand getCommand(String id) throws NotFoundException {
         return this.recipeToRecipeCommand.convert(this.getRecipe(id));
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(String id) {
         this.recipeRepository.deleteById(id);
     }
 }

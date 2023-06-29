@@ -52,14 +52,14 @@ class RecipeServiceImplTest {
 
     @Test
     public void deleteById() {
-        Long idToDelete = 2L;
+        String idToDelete = "2";
         this.recipeService.deleteById(idToDelete);
-        verify(this.recipeRepository, times(1)).deleteById(anyLong());
+        verify(this.recipeRepository, times(1)).deleteById(anyString());
     }
 
     @Test
     public void getRecipeByIdNotFound() {
         when(this.recipeRepository.findAll()).thenReturn(new LinkedList<>());
-        Assertions.assertThrows(NotFoundException.class, () -> this.recipeService.getRecipe(1L));
+        Assertions.assertThrows(NotFoundException.class, () -> this.recipeService.getRecipe("1"));
     }
 }

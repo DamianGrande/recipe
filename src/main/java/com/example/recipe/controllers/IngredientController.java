@@ -30,19 +30,19 @@ public class IngredientController {
     }
 
     @GetMapping("/recipe/{id}/ingredients")
-    public String listIngredients(@PathVariable Long id, Model model) throws NotFoundException {
+    public String listIngredients(@PathVariable String id, Model model) throws NotFoundException {
         model.addAttribute("recipe", this.recipeService.getCommand(id));
         return "recipe/ingredient/list";
     }
 
     @GetMapping("/recipe/{recipeId}/ingredient/{ingredientId}/show")
-    public String showIngredient(@PathVariable Long recipeId, @PathVariable Long ingredientId, Model model) {
+    public String showIngredient(@PathVariable String recipeId, @PathVariable String ingredientId, Model model) {
         model.addAttribute("ingredient", this.ingredientService.findByRecipeIdAndIngredientId(recipeId, ingredientId));
         return "recipe/ingredient/show";
     }
 
     @GetMapping("/recipe/{recipeId}/ingredient/{ingredientId}/update")
-    public String updateIngredient(@PathVariable Long recipeId, @PathVariable Long ingredientId, Model model) {
+    public String updateIngredient(@PathVariable String recipeId, @PathVariable String ingredientId, Model model) {
         model.addAttribute("ingredient", this.ingredientService.findByRecipeIdAndIngredientId(recipeId, ingredientId));
         model.addAttribute("uomList", this.unitOfMeasureService.listAllUoms());
         return "recipe/ingredient/form";
@@ -50,23 +50,22 @@ public class IngredientController {
 
     @PostMapping
     @RequestMapping("/recipe/{id}/ingredient")
-    public String saveOrUpdate(@PathVariable Long id, @ModelAttribute IngredientCommand ingredient, @Validated Long uomId) {
+    public String saveOrUpdate(@PathVariable String id, @ModelAttribute IngredientCommand ingredient, @Validated String uomId) {
         ingredient.setUnitOfMeasure(this.unitOfMeasureService.findById(uomId));
         return "redirect:/recipe/" + id + "/ingredient/" + this.ingredientService.saveIngredientCommand(ingredient).getId() + "/show";
     }
 
     @GetMapping("/recipe/{id}/ingredient/new")
-    public String newRecipeForm(@PathVariable Long id, Model model) throws NotFoundException {
-        RecipeCommand recipeCommand = this.recipeService.getCommand(id);
+    public String newRecipeForm(@PathVariable String id, Model model) throws NotFoundException {
         IngredientCommand ingredientCommand = new IngredientCommand();
-        ingredientCommand.setRecipe(this.recipeCommandToRecipe.convert(recipeCommand));
+        ingredientCommand.setRecipeId(id);
         model.addAttribute("ingredient", ingredientCommand);
         model.addAttribute("uomList", this.unitOfMeasureService.listAllUoms());
         return "recipe/ingredient/form";
     }
 
     @GetMapping("/recipe/{recipeId}/ingredient/{ingredientId}/delete")
-    public String deleteIngredient(@PathVariable Long recipeId, @PathVariable Long ingredientId) {
+    public String deleteIngredient(@PathVariable String recipeId, @PathVariable String ingredientId) {
         this.ingredientService.deleteIngredient(recipeId, ingredientId);
         return "redirect:/recipe/" + recipeId + "/ingredients";
     }

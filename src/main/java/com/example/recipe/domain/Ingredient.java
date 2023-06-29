@@ -1,23 +1,27 @@
 package com.example.recipe.domain;
 
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Data
-@Entity
 public class Ingredient {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
+    @Id
+    private String id;
     private String description;
     private BigDecimal amount;
 
-    @OneToOne
+    @DBRef
     private UnitOfMeasure unitOfMeasure;
 
-    @ManyToOne
-    private Recipe recipe;
+    public Ingredient() {
+    }
+
+    public Ingredient(String id) {
+        this.id = id;
+    }
+
 }

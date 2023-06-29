@@ -24,13 +24,13 @@ public class ImageController {
     }
 
     @GetMapping("/recipe/{id}/image")
-    public String getImageForm(@PathVariable Long id, Model model) throws NotFoundException {
+    public String getImageForm(@PathVariable String id, Model model) throws NotFoundException {
         model.addAttribute("recipe", this.recipeService.getCommand(id));
         return "image-upload-form";
     }
 
     @PostMapping("/recipe/{id}/image")
-    public String handleImagePost(@PathVariable Long id, @RequestParam("imageFile") MultipartFile file) throws Exception {
+    public String handleImagePost(@PathVariable String id, @RequestParam("imageFile") MultipartFile file) throws Exception {
         this.imageService.saveImageFile(id, file);
         return "redirect:/recipe/?id=" + id;
     }

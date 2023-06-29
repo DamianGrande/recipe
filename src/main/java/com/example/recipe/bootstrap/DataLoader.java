@@ -45,16 +45,17 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Notes guacamoleNotes = new Notes();
+        this.saveCategories();
+        this.saveUnitsOfMeasure();
+        Notes guacamoleNotes = new Notes("guacamoleNotes");
         guacamoleNotes.setRecipeNotes("Chilling tomatoes hurts their flavor. So, if you want to add chopped tomato to your guacamole, add it just before serving.");
         Category mexican = this.categoryRepository.findByDescription("Mexican").get();
-        Recipe guacamole = new Recipe();
+        Recipe guacamole = new Recipe("Guacamole");
         HashSet<Recipe> recipes = new HashSet<Recipe>();
         HashSet<Category> categories = new HashSet<Category>();
         categories.add(mexican);
         recipes.add(guacamole);
         mexican.setRecipes(recipes);
-        guacamoleNotes.setRecipe(guacamole);
         HashSet<Ingredient> ingredients = this.getIngredients(guacamole, 0);
         guacamole.setDirections("\n" +
                 "Cut the avocado:\n" +
@@ -94,16 +95,15 @@ public class DataLoader implements CommandLineRunner {
         guacamole.setIngredients(ingredients);
         guacamole.setCategories(categories);
         this.recipeRepository.save(guacamole);
-        Notes chickenNotes = new Notes();
+        Notes chickenNotes = new Notes("chickenNotes");
         chickenNotes.setRecipeNotes("It's just a chicken.");
         Category american = this.categoryRepository.findByDescription("American").get();
-        Recipe chicken = new Recipe();
+        Recipe chicken = new Recipe("Chicken");
         HashSet<Recipe> chickenRecipes = new HashSet<Recipe>();
         HashSet<Category> chickenCategories = new HashSet<Category>();
         chickenCategories.add(american);
         chickenRecipes.add(chicken);
         american.setRecipes(chickenRecipes);
-        chickenNotes.setRecipe(chicken);
         HashSet<Ingredient> chickenIngredients = this.getIngredients(chicken, 1);
         chicken.setDirections("Prepare a gas or charcoal grill for medium-high, direct heat\n" +
                 "Make the marinade and coat the chicken:\n" +
@@ -168,8 +168,6 @@ public class DataLoader implements CommandLineRunner {
             this.populateIngredientsForGuacamole(ingredients);
         else
             this.populateIngredientsForChicken(ingredients);
-        for (Ingredient ingredient : ingredients)
-            ingredient.setRecipe(recipe);
         return ingredients;
     }
 
@@ -177,52 +175,52 @@ public class DataLoader implements CommandLineRunner {
         UnitOfMeasure unit = this.unitOfMeasureRepository.findByDescription("Unit").get();
         UnitOfMeasure teaspoon = this.unitOfMeasureRepository.findByDescription("Teaspoon").get();
         UnitOfMeasure tablespoon = this.unitOfMeasureRepository.findByDescription("Tablespoon").get();
-        Ingredient avocado = new Ingredient();
+        Ingredient avocado = new Ingredient("avocado");
         avocado.setDescription("ripe avocados");
         avocado.setAmount(new BigDecimal(2));
         avocado.setUnitOfMeasure(unit);
         ingredients.add(avocado);
-        Ingredient salt = new Ingredient();
+        Ingredient salt = new Ingredient("salt");
         salt.setDescription("salt, plus more to taste");
         salt.setAmount(new BigDecimal(0.25));
         salt.setUnitOfMeasure(teaspoon);
         ingredients.add(salt);
-        Ingredient lime = new Ingredient();
+        Ingredient lime = new Ingredient("lime");
         lime.setDescription("fresh lime or lemon juice");
         lime.setAmount(new BigDecimal(1));
         lime.setUnitOfMeasure(tablespoon);
         ingredients.add(lime);
-        Ingredient onion = new Ingredient();
+        Ingredient onion = new Ingredient("onion");
         onion.setDescription("minced red onion or thinly sliced green onion");
         onion.setAmount(new BigDecimal(4));
         onion.setUnitOfMeasure(tablespoon);
         ingredients.add(onion);
-        Ingredient serrano = new Ingredient();
+        Ingredient serrano = new Ingredient("serrano");
         serrano.setDescription("serrano chilis, stems and seeds removed, minced");
         serrano.setAmount(new BigDecimal(2));
         serrano.setUnitOfMeasure(unit);
         ingredients.add(serrano);
-        Ingredient cilantro = new Ingredient();
+        Ingredient cilantro = new Ingredient("cilantro");
         cilantro.setDescription("cilantro (leaves and tender stems), finely chopped");
         cilantro.setAmount(new BigDecimal(2));
         cilantro.setUnitOfMeasure(tablespoon);
         ingredients.add(cilantro);
-        Ingredient pepper = new Ingredient();
+        Ingredient pepper = new Ingredient("pepper");
         pepper.setDescription("Pinch freshly ground black ");
         pepper.setAmount(new BigDecimal(1));
         pepper.setUnitOfMeasure(unit);
         ingredients.add(pepper);
-        Ingredient tomato = new Ingredient();
+        Ingredient tomato = new Ingredient("tomato");
         tomato.setDescription("ripe tomato, chopped (optional)");
         tomato.setAmount(new BigDecimal(0.5));
         tomato.setUnitOfMeasure(unit);
         ingredients.add(tomato);
-        Ingredient jicama = new Ingredient();
+        Ingredient jicama = new Ingredient("jicama");
         jicama.setDescription("Red radish or jicama slices for garnish (optional)");
         jicama.setAmount(new BigDecimal(1));
         jicama.setUnitOfMeasure(unit);
         ingredients.add(jicama);
-        Ingredient tortilla = new Ingredient();
+        Ingredient tortilla = new Ingredient("tortilla");
         tortilla.setDescription("Tortilla chips, to serve");
         tortilla.setAmount(new BigDecimal(1));
         tortilla.setUnitOfMeasure(unit);
@@ -233,55 +231,103 @@ public class DataLoader implements CommandLineRunner {
         UnitOfMeasure unit = this.unitOfMeasureRepository.findByDescription("Unit").get();
         UnitOfMeasure teaspoon = this.unitOfMeasureRepository.findByDescription("Teaspoon").get();
         UnitOfMeasure tablespoon = this.unitOfMeasureRepository.findByDescription("Tablespoon").get();
-        Ingredient ancho = new Ingredient();
+        Ingredient ancho = new Ingredient("ancho");
         ancho.setDescription("ancho chili powder");
         ancho.setAmount(new BigDecimal(2));
         ancho.setUnitOfMeasure(tablespoon);
         ingredients.add(ancho);
-        Ingredient oregano = new Ingredient();
+        Ingredient oregano = new Ingredient("oregano");
         oregano.setDescription("dried oregano");
         oregano.setAmount(new BigDecimal(1));
         oregano.setUnitOfMeasure(teaspoon);
         ingredients.add(oregano);
-        Ingredient cumin = new Ingredient();
+        Ingredient cumin = new Ingredient("cumin");
         cumin.setDescription("dried cumin");
         cumin.setAmount(new BigDecimal(1));
         cumin.setUnitOfMeasure(teaspoon);
         ingredients.add(cumin);
-        Ingredient sugar = new Ingredient();
+        Ingredient sugar = new Ingredient("sugar");
         sugar.setDescription("sugar");
         sugar.setAmount(new BigDecimal(1));
         sugar.setUnitOfMeasure(teaspoon);
         ingredients.add(sugar);
-        Ingredient salt = new Ingredient();
+        Ingredient salt = new Ingredient("salt");
         salt.setDescription("salt");
         salt.setAmount(new BigDecimal(0.5));
         salt.setUnitOfMeasure(teaspoon);
         ingredients.add(salt);
-        Ingredient garlic = new Ingredient();
+        Ingredient garlic = new Ingredient("garlic");
         garlic.setDescription("clove garlic, finely chopped");
         garlic.setAmount(new BigDecimal(1));
         garlic.setUnitOfMeasure(unit);
         ingredients.add(garlic);
-        Ingredient orange = new Ingredient();
+        Ingredient orange = new Ingredient("orange");
         orange.setDescription("finely grated orange zest");
         orange.setAmount(new BigDecimal(1));
         orange.setUnitOfMeasure(tablespoon);
         ingredients.add(orange);
-        Ingredient juice = new Ingredient();
+        Ingredient juice = new Ingredient("juice");
         juice.setDescription("fresh-squeezed orange juice");
         juice.setAmount(new BigDecimal(3));
         juice.setUnitOfMeasure(tablespoon);
         ingredients.add(juice);
-        Ingredient olive = new Ingredient();
+        Ingredient olive = new Ingredient("olive");
         olive.setDescription("olive oil");
         olive.setAmount(new BigDecimal(2));
         olive.setUnitOfMeasure(tablespoon);
         ingredients.add(olive);
-        Ingredient thighs = new Ingredient();
+        Ingredient thighs = new Ingredient("thighs");
         thighs.setDescription("skinless, boneless chicken thighs (1 1/4 pounds)");
         thighs.setAmount(new BigDecimal(6));
         thighs.setUnitOfMeasure(unit);
         ingredients.add(thighs);
+    }
+
+    private void saveCategories() {
+
+        Category category = new Category();
+        category.setDescription("American");
+        this.categoryRepository.save(category);
+
+        category = new Category();
+        category.setDescription("Italian");
+        this.categoryRepository.save(category);
+
+        category = new Category();
+        category.setDescription("Mexican");
+        this.categoryRepository.save(category);
+
+        category = new Category();
+        category.setDescription("FastFood");
+        this.categoryRepository.save(category);
+
+    }
+
+    private void saveUnitsOfMeasure() {
+
+        UnitOfMeasure unitOfMeasure = new UnitOfMeasure();
+        unitOfMeasure.setDescription("Teaspoon");
+        this.unitOfMeasureRepository.save(unitOfMeasure);
+
+        unitOfMeasure = new UnitOfMeasure();
+        unitOfMeasure.setDescription("Tablespoon");
+        this.unitOfMeasureRepository.save(unitOfMeasure);
+
+        unitOfMeasure = new UnitOfMeasure();
+        unitOfMeasure.setDescription("Cup");
+        this.unitOfMeasureRepository.save(unitOfMeasure);
+
+        unitOfMeasure = new UnitOfMeasure();
+        unitOfMeasure.setDescription("Pinch");
+        this.unitOfMeasureRepository.save(unitOfMeasure);
+
+        unitOfMeasure = new UnitOfMeasure();
+        unitOfMeasure.setDescription("Ounce");
+        this.unitOfMeasureRepository.save(unitOfMeasure);
+
+        unitOfMeasure = new UnitOfMeasure();
+        unitOfMeasure.setDescription("Unit");
+        this.unitOfMeasureRepository.save(unitOfMeasure);
+
     }
 }

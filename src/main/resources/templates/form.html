@@ -56,6 +56,10 @@
                                         </label>
                                     </div>
                                 </div>
+                                <div th:each="category, index : ${command.categories}">
+                                    <input type="hidden" th:field="*{categories[__${index.index}__].id}">
+                                    <input type="hidden" th:field="*{categories[__${index.index}__].description}">
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-3 form-group"
@@ -149,6 +153,14 @@
                                             1 Teaspoon of Sugar
                                         </li>
                                     </ul>
+                                    <div th:each="ingredient, index : ${command.ingredients}">
+                                        <input type="hidden" th:field="*{ingredients[__${index.index}__].recipeId}">
+                                        <input type="hidden" th:field="*{ingredients[__${index.index}__].id}">
+                                        <input type="hidden" th:field="*{ingredients[__${index.index}__].amount}">
+                                        <input type="hidden" th:field="*{ingredients[__${index.index}__].description}">
+                                        <input type="hidden"
+                                               th:field="*{ingredients[__${index.index}__].unitOfMeasure}">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -177,10 +189,12 @@
                             <div class="panel-heading">
                                 <h1 class="panel-title">Notes</h1>
                             </div>
+                            <input type="hidden" th:field="*{notes.id}"/>
                             <div class="panel-body">
                                 <div class="row">
                                     <div class="col-md-12 form-group">
-                                        <textarea class="form-control" rows="3" th:field="*{notes}"></textarea>
+                                        <textarea class="form-control" rows="3"
+                                                  th:field="*{notes.recipeNotes}"></textarea>
                                     </div>
                                 </div>
                             </div>
