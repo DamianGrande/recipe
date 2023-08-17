@@ -3,7 +3,10 @@ package com.example.recipe.bootstrap;
 import com.example.recipe.domain.*;
 import com.example.recipe.repositories.CategoryRepository;
 import com.example.recipe.repositories.RecipeRepository;
-import com.example.recipe.repositories.UnitOfMeasureRepository;
+import com.example.recipe.repositories.reactive.UnitOfMeasureReactiveRepository;
+import com.example.recipe.services.reactive.CategoryReactiveService;
+import com.example.recipe.services.reactive.RecipeReactiveService;
+import com.example.recipe.services.reactive.UnitOfMeasureReactiveService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -20,9 +23,13 @@ import java.util.HashSet;
 @Component
 @Profile("default")
 public class DataLoader implements CommandLineRunner {
-    private final UnitOfMeasureRepository unitOfMeasureRepository;
+
+    private final UnitOfMeasureReactiveRepository unitOfMeasureRepository;
     private final CategoryRepository categoryRepository;
     private final RecipeRepository recipeRepository;
+    private final UnitOfMeasureReactiveService unitOfMeasureReactiveService;
+    private final CategoryReactiveService categoryReactiveService;
+    private final RecipeReactiveService recipeReactiveService;
 
     public static Byte[] getBytesFromImage(String imagePath) throws IOException {
         BufferedImage bImage = ImageIO.read(new ClassPathResource(imagePath).getFile());
@@ -37,16 +44,28 @@ public class DataLoader implements CommandLineRunner {
     }
 
     @Autowired
-    public DataLoader(UnitOfMeasureRepository unitOfMeasureRepository, CategoryRepository categoryRepository, RecipeRepository recipeRepository) {
+    public DataLoader(UnitOfMeasureReactiveRepository unitOfMeasureRepository, CategoryRepository categoryRepository, RecipeRepository recipeRepository, UnitOfMeasureReactiveService unitOfMeasureReactiveService, CategoryReactiveService categoryReactiveService, RecipeReactiveService recipeReactiveService) {
         this.unitOfMeasureRepository = unitOfMeasureRepository;
         this.categoryRepository = categoryRepository;
         this.recipeRepository = recipeRepository;
+        this.unitOfMeasureReactiveService = unitOfMeasureReactiveService;
+        this.categoryReactiveService = categoryReactiveService;
+        this.recipeReactiveService = recipeReactiveService;
     }
 
     @Override
     public void run(String... args) throws Exception {
+
         this.saveCategories();
+        System.out.println("#####################################");
+        System.out.println("Number of categories: " + this.categoryReactiveService.getAll().count().block());
+        System.out.println("#####################################");
+
         this.saveUnitsOfMeasure();
+        System.out.println("#####################################");
+        System.out.println("Number of units of measure: " + this.unitOfMeasureReactiveService.getAll().count().block());
+        System.out.println("#####################################");
+
         Notes guacamoleNotes = new Notes("guacamoleNotes");
         guacamoleNotes.setRecipeNotes("Chilling tomatoes hurts their flavor. So, if you want to add chopped tomato to your guacamole, add it just before serving.");
         Category mexican = this.categoryRepository.findByDescription("Mexican").get();
@@ -160,6 +179,11 @@ public class DataLoader implements CommandLineRunner {
         chicken.setIngredients(chickenIngredients);
         chicken.setCategories(chickenCategories);
         this.recipeRepository.save(chicken);
+
+        System.out.println("#####################################");
+        System.out.println("Number of recipes: " + this.recipeReactiveService.getAll().count().block());
+        System.out.println("#####################################");
+
     }
 
     private HashSet<Ingredient> getIngredients(Recipe recipe, int type) {
@@ -172,9 +196,9 @@ public class DataLoader implements CommandLineRunner {
     }
 
     private void populateIngredientsForGuacamole(HashSet<Ingredient> ingredients) {
-        UnitOfMeasure unit = this.unitOfMeasureRepository.findByDescription("Unit").get();
-        UnitOfMeasure teaspoon = this.unitOfMeasureRepository.findByDescription("Teaspoon").get();
-        UnitOfMeasure tablespoon = this.unitOfMeasureRepository.findByDescription("Tablespoon").get();
+        UnitOfMeasure unit = this.unitOfMeasureRepository.findUnitOfMeasuresByDescription("Unit").block();
+        UnitOfMeasure teaspoon = this.unitOfMeasureRepository.findUnitOfMeasuresByDescription("Teaspoon").block();
+        UnitOfMeasure tablespoon = this.unitOfMeasureRepository.findUnitOfMeasuresByDescription("Tablespoon").block();
         Ingredient avocado = new Ingredient("avocado");
         avocado.setDescription("ripe avocados");
         avocado.setAmount(new BigDecimal(2));
@@ -182,7 +206,7 @@ public class DataLoader implements CommandLineRunner {
         ingredients.add(avocado);
         Ingredient salt = new Ingredient("salt");
         salt.setDescription("salt, plus more to taste");
-        salt.setAmount(new BigDecimal(0.25));
+        salt.setAmount(new BigDecimal("0.25"));
         salt.setUnitOfMeasure(teaspoon);
         ingredients.add(salt);
         Ingredient lime = new Ingredient("lime");
@@ -228,9 +252,9 @@ public class DataLoader implements CommandLineRunner {
     }
 
     private void populateIngredientsForChicken(HashSet<Ingredient> ingredients) {
-        UnitOfMeasure unit = this.unitOfMeasureRepository.findByDescription("Unit").get();
-        UnitOfMeasure teaspoon = this.unitOfMeasureRepository.findByDescription("Teaspoon").get();
-        UnitOfMeasure tablespoon = this.unitOfMeasureRepository.findByDescription("Tablespoon").get();
+        UnitOfMeasure unit = this.unitOfMeasureRepository.findUnitOfMeasuresByDescription("Unit").block();
+        UnitOfMeasure teaspoon = this.unitOfMeasureRepository.findUnitOfMeasuresByDescription("Teaspoon").block();
+        UnitOfMeasure tablespoon = this.unitOfMeasureRepository.findUnitOfMeasuresByDescription("Tablespoon").block();
         Ingredient ancho = new Ingredient("ancho");
         ancho.setDescription("ancho chili powder");
         ancho.setAmount(new BigDecimal(2));
@@ -305,29 +329,12 @@ public class DataLoader implements CommandLineRunner {
 
     private void saveUnitsOfMeasure() {
 
-        UnitOfMeasure unitOfMeasure = new UnitOfMeasure();
-        unitOfMeasure.setDescription("Teaspoon");
-        this.unitOfMeasureRepository.save(unitOfMeasure);
-
-        unitOfMeasure = new UnitOfMeasure();
-        unitOfMeasure.setDescription("Tablespoon");
-        this.unitOfMeasureRepository.save(unitOfMeasure);
-
-        unitOfMeasure = new UnitOfMeasure();
-        unitOfMeasure.setDescription("Cup");
-        this.unitOfMeasureRepository.save(unitOfMeasure);
-
-        unitOfMeasure = new UnitOfMeasure();
-        unitOfMeasure.setDescription("Pinch");
-        this.unitOfMeasureRepository.save(unitOfMeasure);
-
-        unitOfMeasure = new UnitOfMeasure();
-        unitOfMeasure.setDescription("Ounce");
-        this.unitOfMeasureRepository.save(unitOfMeasure);
-
-        unitOfMeasure = new UnitOfMeasure();
-        unitOfMeasure.setDescription("Unit");
-        this.unitOfMeasureRepository.save(unitOfMeasure);
+        this.unitOfMeasureRepository.save(new UnitOfMeasure("Teaspoon")).block();
+        this.unitOfMeasureRepository.save(new UnitOfMeasure("Tablespoon")).block();
+        this.unitOfMeasureRepository.save(new UnitOfMeasure("Cup")).block();
+        this.unitOfMeasureRepository.save(new UnitOfMeasure("Pinch")).block();
+        this.unitOfMeasureRepository.save(new UnitOfMeasure("Ounce")).block();
+        this.unitOfMeasureRepository.save(new UnitOfMeasure("Unit")).block();
 
     }
 }

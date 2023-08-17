@@ -3,14 +3,15 @@ package com.example.recipe.services;
 import com.example.recipe.commands.UnitOfMeasureCommand;
 import com.example.recipe.converters.UnitOfMeasureToUnitOfMeasureCommand;
 import com.example.recipe.domain.UnitOfMeasure;
-import com.example.recipe.repositories.UnitOfMeasureRepository;
+import com.example.recipe.repositories.reactive.UnitOfMeasureReactiveRepository;
+import com.example.recipe.services.reactive.UnitOfMeasureReactiveService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import reactor.core.publisher.Flux;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -20,26 +21,28 @@ class UnitOfMeasureServiceImplTest {
     UnitOfMeasureService service;
 
     @Mock
-    UnitOfMeasureRepository unitOfMeasureRepository;
+    UnitOfMeasureReactiveRepository unitOfMeasureRepository;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         MockitoAnnotations.initMocks(this);
-        this.service = new UnitOfMeasureServiceImpl(this.unitOfMeasureRepository, this.unitOfMeasureToUnitOfMeasureCommand);
+        this.service = new UnitOfMeasureReactiveService(this.unitOfMeasureRepository, this.unitOfMeasureToUnitOfMeasureCommand);
     }
 
     @Test
-    void listAllUoms() throws Exception {
-        Set<UnitOfMeasure> unitOfMeasures = new HashSet<UnitOfMeasure>();
+    void listAllUoms() {
+
         UnitOfMeasure uom1 = new UnitOfMeasure();
         uom1.setId("1");
-        unitOfMeasures.add(uom1);
         UnitOfMeasure uom2 = new UnitOfMeasure();
         uom2.setId("2");
-        unitOfMeasures.add(uom2);
-        when(this.unitOfMeasureRepository.findAll()).thenReturn(unitOfMeasures);
-        Set<UnitOfMeasureCommand> commands = this.service.listAllUoms();
+
+        when(this.unitOfMeasureRepository.findAll()).thenReturn(Flux.just(uom1, uom2));
+
+        List<UnitOfMeasureCommand> commands = this.service.listAllUoms().collectList().block();
+
         assertEquals(2, commands.size());
         verify(this.unitOfMeasureRepository, times(1)).findAll();
+
     }
 }

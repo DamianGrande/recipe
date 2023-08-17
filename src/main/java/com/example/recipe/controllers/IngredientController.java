@@ -2,8 +2,6 @@ package com.example.recipe.controllers;
 
 import com.example.recipe.commands.IngredientCommand;
 
-import com.example.recipe.commands.RecipeCommand;
-import com.example.recipe.converters.RecipeCommandToRecipe;
 import com.example.recipe.exceptions.NotFoundException;
 import com.example.recipe.services.IngredientService;
 import com.example.recipe.services.RecipeService;
@@ -19,14 +17,12 @@ public class IngredientController {
     private final RecipeService recipeService;
     private final IngredientService ingredientService;
     private final UnitOfMeasureService unitOfMeasureService;
-    private final RecipeCommandToRecipe recipeCommandToRecipe;
 
     @Autowired
-    public IngredientController(RecipeService recipeService, IngredientService ingredientService, UnitOfMeasureService unitOfMeasureService, RecipeCommandToRecipe recipeCommandToRecipe) {
+    public IngredientController(RecipeService recipeService, IngredientService ingredientService, UnitOfMeasureService unitOfMeasureService) {
         this.recipeService = recipeService;
         this.ingredientService = ingredientService;
         this.unitOfMeasureService = unitOfMeasureService;
-        this.recipeCommandToRecipe = recipeCommandToRecipe;
     }
 
     @GetMapping("/recipe/{id}/ingredients")
@@ -44,14 +40,14 @@ public class IngredientController {
     @GetMapping("/recipe/{recipeId}/ingredient/{ingredientId}/update")
     public String updateIngredient(@PathVariable String recipeId, @PathVariable String ingredientId, Model model) {
         model.addAttribute("ingredient", this.ingredientService.findByRecipeIdAndIngredientId(recipeId, ingredientId));
-        model.addAttribute("uomList", this.unitOfMeasureService.listAllUoms());
+        model.addAttribute("uomList", this.unitOfMeasureService.listAllUoms().collectList().block());
         return "recipe/ingredient/form";
     }
 
     @PostMapping
     @RequestMapping("/recipe/{id}/ingredient")
     public String saveOrUpdate(@PathVariable String id, @ModelAttribute IngredientCommand ingredient, @Validated String uomId) {
-        ingredient.setUnitOfMeasure(this.unitOfMeasureService.findById(uomId));
+        ingredient.setUnitOfMeasure(this.unitOfMeasureService.findById(uomId).block());
         return "redirect:/recipe/" + id + "/ingredient/" + this.ingredientService.saveIngredientCommand(ingredient).getId() + "/show";
     }
 
@@ -60,7 +56,7 @@ public class IngredientController {
         IngredientCommand ingredientCommand = new IngredientCommand();
         ingredientCommand.setRecipeId(id);
         model.addAttribute("ingredient", ingredientCommand);
-        model.addAttribute("uomList", this.unitOfMeasureService.listAllUoms());
+        model.addAttribute("uomList", this.unitOfMeasureService.listAllUoms().collectList().block());
         return "recipe/ingredient/form";
     }
 

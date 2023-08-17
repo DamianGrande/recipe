@@ -2,11 +2,13 @@ package com.example.recipe.services;
 
 import com.example.recipe.commands.UnitOfMeasureCommand;
 import com.example.recipe.domain.UnitOfMeasure;
-
-import java.util.Set;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface UnitOfMeasureService {
-    Set<UnitOfMeasureCommand> listAllUoms();
 
-    UnitOfMeasure findById(String id);
+    Flux<UnitOfMeasureCommand> listAllUoms();
+
+    Mono<UnitOfMeasure> findById(String id);
+
 }

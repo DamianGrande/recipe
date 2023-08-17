@@ -12,4 +12,11 @@ public class UnitOfMeasure {
     private String id;
     private String description;
 
+    public UnitOfMeasure() {
+    }
+
+    public UnitOfMeasure(String description) {
+        this.description = description;
+    }
+
 }

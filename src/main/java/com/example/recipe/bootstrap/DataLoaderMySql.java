@@ -3,7 +3,7 @@ package com.example.recipe.bootstrap;
 import com.example.recipe.domain.Category;
 import com.example.recipe.domain.UnitOfMeasure;
 import com.example.recipe.repositories.CategoryRepository;
-import com.example.recipe.repositories.UnitOfMeasureRepository;
+import com.example.recipe.repositories.reactive.UnitOfMeasureReactiveRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -14,21 +14,21 @@ import org.springframework.stereotype.Component;
 public class DataLoaderMySql implements CommandLineRunner {
 
     private final CategoryRepository categoryRepository;
-    private final UnitOfMeasureRepository unitOfMeasureRepository;
+    private final UnitOfMeasureReactiveRepository unitOfMeasureRepository;
 
     @Autowired
-    public DataLoaderMySql(CategoryRepository categoryRepository, UnitOfMeasureRepository unitOfMeasureRepository) {
+    public DataLoaderMySql(CategoryRepository categoryRepository, UnitOfMeasureReactiveRepository unitOfMeasureRepository) {
         this.categoryRepository = categoryRepository;
         this.unitOfMeasureRepository = unitOfMeasureRepository;
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
 
         if (this.categoryRepository.count() == 0)
             this.saveCategories();
 
-        if (this.unitOfMeasureRepository.count() == 0)
+        if (this.unitOfMeasureRepository.count().block() == 0)
             this.saveUnitsOfMeasure();
 
     }
@@ -55,33 +55,13 @@ public class DataLoaderMySql implements CommandLineRunner {
 
     private void saveUnitsOfMeasure() {
 
-        UnitOfMeasure unitOfMeasure = new UnitOfMeasure();
-        unitOfMeasure.setDescription("Teaspoon");
-        this.unitOfMeasureRepository.save(unitOfMeasure);
-
-        unitOfMeasure = new UnitOfMeasure();
-        unitOfMeasure.setDescription("Tablespoon");
-        this.unitOfMeasureRepository.save(unitOfMeasure);
-
-        unitOfMeasure = new UnitOfMeasure();
-        unitOfMeasure.setDescription("Cup");
-        this.unitOfMeasureRepository.save(unitOfMeasure);
-
-        unitOfMeasure = new UnitOfMeasure();
-        unitOfMeasure.setDescription("Pinch");
-        this.unitOfMeasureRepository.save(unitOfMeasure);
-
-        unitOfMeasure = new UnitOfMeasure();
-        unitOfMeasure.setDescription("Tablespoon");
-        this.unitOfMeasureRepository.save(unitOfMeasure);
-
-        unitOfMeasure = new UnitOfMeasure();
-        unitOfMeasure.setDescription("Ounce");
-        this.unitOfMeasureRepository.save(unitOfMeasure);
-
-        unitOfMeasure = new UnitOfMeasure();
-        unitOfMeasure.setDescription("Unit");
-        this.unitOfMeasureRepository.save(unitOfMeasure);
+        this.unitOfMeasureRepository.save(new UnitOfMeasure("Teaspoon"));
+        this.unitOfMeasureRepository.save(new UnitOfMeasure("Tablespoon"));
+        this.unitOfMeasureRepository.save(new UnitOfMeasure("Cup"));
+        this.unitOfMeasureRepository.save(new UnitOfMeasure("Pinch"));
+        this.unitOfMeasureRepository.save(new UnitOfMeasure("Tablespoon"));
+        this.unitOfMeasureRepository.save(new UnitOfMeasure("Ounce"));
+        this.unitOfMeasureRepository.save(new UnitOfMeasure("Unit"));
 
     }
 

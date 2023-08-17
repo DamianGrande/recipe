@@ -34,14 +34,24 @@ public class RecipeServiceIT {
 
     @Test
     public void testSaveOfDescription() throws NotFoundException {
+
         Iterable<Recipe> recipes = this.recipeRepository.findAll();
         Recipe testRecipe = recipes.iterator().next();
+        String oldDescription = testRecipe.getDescription();
+
         RecipeCommand testRecipeCommand = this.recipeToRecipeCommand.convert(testRecipe);
         testRecipeCommand.setDescription(RecipeServiceIT.NEW_DESCRIPTION);
         RecipeCommand savedRecipeCommand = this.recipeService.saveRecipeCommand(testRecipeCommand);
+
         assertEquals(RecipeServiceIT.NEW_DESCRIPTION, savedRecipeCommand.getDescription());
         assertEquals(testRecipe.getId(), savedRecipeCommand.getId());
         assertEquals(testRecipe.getCategories().size(), savedRecipeCommand.getCategories().size());
         assertEquals(testRecipe.getIngredients().size(), savedRecipeCommand.getIngredients().size());
+
+        testRecipeCommand.setDescription(oldDescription);
+        savedRecipeCommand = this.recipeService.saveRecipeCommand(testRecipeCommand);
+
+        assertEquals(oldDescription, savedRecipeCommand.getDescription());
+
     }
 }

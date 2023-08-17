@@ -20,7 +20,7 @@
                   th:action="@{'/recipe/' + *{recipeId} + '/ingredient'}">
                 <input type="hidden" th:field="*{recipeId}"/>
                 <input type="hidden" th:field="*{id}"/>
-                <input type="hidden" th:field="*{unitOfMeasure}"/>
+                <input type="hidden" th:field="*{unitOfMeasure.id}"/>
                 <div class="panel-group">
                     <div class="panel panel-primary">
                         <div class="panel-heading">

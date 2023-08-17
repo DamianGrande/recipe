@@ -23,6 +23,10 @@ public class Category {
     public Category() {
     }
 
+    public Category(String description) {
+        this.description = description;
+    }
+
     public Category(String id, String description) {
         this.id = id;
         this.description = description;

@@ -1,13 +1,14 @@
-package com.example.recipe.services;
+package com.example.recipe.services.reactive;
 
 import com.example.recipe.commands.IngredientCommand;
 import com.example.recipe.converters.IngredientCommandToIngredient;
 import com.example.recipe.converters.IngredientToIngredientCommand;
 import com.example.recipe.domain.Ingredient;
 import com.example.recipe.domain.Recipe;
-import com.example.recipe.repositories.IngredientRepository;
-import com.example.recipe.repositories.RecipeRepository;
-import com.example.recipe.repositories.UnitOfMeasureRepository;
+import com.example.recipe.repositories.reactive.IngredientReactiveRepository;
+import com.example.recipe.repositories.reactive.RecipeReactiveRepository;
+import com.example.recipe.repositories.reactive.UnitOfMeasureReactiveRepository;
+import com.example.recipe.services.IngredientService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,25 +17,26 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-public class IngredientServiceImpl implements IngredientService {
+public class IngredientReactiveService implements IngredientService {
+
     private final IngredientToIngredientCommand ingredientToIngredientCommand;
     private final IngredientCommandToIngredient ingredientCommandToIngredient;
-    private final RecipeRepository recipeRepository;
-    private final UnitOfMeasureRepository unitOfMeasureRepository;
-    private final IngredientRepository ingredientRepository;
+    private final RecipeReactiveRepository recipeReactiveRepository;
+    private final UnitOfMeasureReactiveRepository unitOfMeasureReactiveRepository;
+    private final IngredientReactiveRepository ingredientReactiveRepository;
 
     @Autowired
-    public IngredientServiceImpl(IngredientToIngredientCommand ingredientToIngredientCommand, IngredientCommandToIngredient ingredientCommandToIngredient, RecipeRepository recipeRepository, UnitOfMeasureRepository unitOfMeasureRepository, IngredientRepository ingredientRepository) {
+    public IngredientReactiveService(IngredientToIngredientCommand ingredientToIngredientCommand, IngredientCommandToIngredient ingredientCommandToIngredient, RecipeReactiveRepository recipeReactiveRepository, UnitOfMeasureReactiveRepository unitOfMeasureReactiveRepository, IngredientReactiveRepository ingredientReactiveRepository) {
         this.ingredientToIngredientCommand = ingredientToIngredientCommand;
         this.ingredientCommandToIngredient = ingredientCommandToIngredient;
-        this.recipeRepository = recipeRepository;
-        this.unitOfMeasureRepository = unitOfMeasureRepository;
-        this.ingredientRepository = ingredientRepository;
+        this.recipeReactiveRepository = recipeReactiveRepository;
+        this.unitOfMeasureReactiveRepository = unitOfMeasureReactiveRepository;
+        this.ingredientReactiveRepository = ingredientReactiveRepository;
     }
 
     @Override
     public IngredientCommand findByRecipeIdAndIngredientId(String recipeId, String ingredientId) {
-        Optional<Recipe> recipeOptional = this.recipeRepository.findById(recipeId);
+        Optional<Recipe> recipeOptional = this.recipeReactiveRepository.findById(recipeId).blockOptional();
         if (recipeOptional.isEmpty())
             log.error("Recipe id not found. Id: " + recipeId);
         Recipe recipe = recipeOptional.get();
@@ -48,7 +50,7 @@ public class IngredientServiceImpl implements IngredientService {
 
     @Override
     public IngredientCommand saveIngredientCommand(IngredientCommand ingredientCommand) {
-        Optional<Recipe> recipeOptional = this.recipeRepository.findById(ingredientCommand.getRecipeId());
+        Optional<Recipe> recipeOptional = this.recipeReactiveRepository.findById(ingredientCommand.getRecipeId()).blockOptional();
         if (recipeOptional.isEmpty()) {
             log.error("Recipe not found for id: " + ingredientCommand.getRecipeId());
             return new IngredientCommand();
@@ -59,24 +61,25 @@ public class IngredientServiceImpl implements IngredientService {
             Ingredient ingredientFound = ingredientOptional.get();
             ingredientFound.setDescription(ingredientCommand.getDescription());
             ingredientFound.setAmount(ingredientCommand.getAmount());
-            ingredientFound.setUnitOfMeasure(this.unitOfMeasureRepository.findById(ingredientCommand.getUnitOfMeasure().getId()).orElseThrow(() -> new RuntimeException("UOM NOT FOUND.")));
+            ingredientFound.setUnitOfMeasure(this.unitOfMeasureReactiveRepository.findById(ingredientCommand.getUnitOfMeasure().getId()).blockOptional().orElseThrow(() -> new RuntimeException("UOM NOT FOUND.")));
         } else {
             Ingredient newIngredient = this.ingredientCommandToIngredient.convert(ingredientCommand);
             newIngredient.setId(null);
             recipe.addIngredient(newIngredient);
-            newIngredient = this.ingredientRepository.save(newIngredient);
+            newIngredient = this.ingredientReactiveRepository.save(newIngredient).block();
             ingredientCommand.setId(newIngredient.getId());
         }
-        Recipe savedRecipe = this.recipeRepository.save(recipe);
+        Recipe savedRecipe = this.recipeReactiveRepository.save(recipe).block();
         return this.ingredientToIngredientCommand.convert(savedRecipe.getIngredients().stream().filter(ingredient -> ingredient.getId().equals(ingredientCommand.getId())).findFirst().get());
     }
 
     @Override
     public void deleteIngredient(String recipeId, String ingredientId) {
-        Recipe recipe = this.recipeRepository.findById(recipeId).orElseThrow();
+        Recipe recipe = this.recipeReactiveRepository.findById(recipeId).blockOptional().orElseThrow();
         Ingredient ingredientToDelete = recipe.getIngredients().stream().filter(ingredient -> ingredient.getId().equals(ingredientId)).findFirst().orElseThrow();
-        this.ingredientRepository.deleteById(ingredientToDelete.getId());
+        this.ingredientReactiveRepository.deleteById(ingredientToDelete.getId()).block();
         recipe.getIngredients().removeIf(ingredient -> ingredient.getId().equals(ingredientToDelete.getId()));
-        this.recipeRepository.save(recipe);
+        this.recipeReactiveRepository.save(recipe).block();
     }
+
 }
