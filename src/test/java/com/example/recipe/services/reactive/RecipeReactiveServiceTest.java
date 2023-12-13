@@ -45,7 +45,7 @@ class RecipeReactiveServiceTest {
     @Test
     void getAll() {
 
-        List<Recipe> recipes = this.service.getAll().buffer().blockFirst();
+        List<Recipe> recipes = this.service.getRecipes().buffer().blockFirst();
 
         assertNotNull(recipes);
         assertEquals(2, recipes.size());

@@ -1,29 +1,25 @@
 package com.example.recipe.services;
 
-import com.example.recipe.converters.RecipeCommandToRecipe;
 import com.example.recipe.converters.RecipeToRecipeCommand;
 import com.example.recipe.domain.Recipe;
 import com.example.recipe.exceptions.NotFoundException;
-import com.example.recipe.repositories.RecipeRepository;
+import com.example.recipe.repositories.reactive.RecipeReactiveRepository;
+import com.example.recipe.services.reactive.RecipeReactiveService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import java.util.HashSet;
-import java.util.LinkedList;
+import reactor.core.publisher.Flux;
 
 import static org.mockito.Mockito.*;
 
 class RecipeServiceImplTest {
-    RecipeServiceImpl recipeService;
+
+    RecipeReactiveService recipeService;
 
     @Mock
-    RecipeRepository recipeRepository;
-
-    @Mock
-    RecipeCommandToRecipe recipeCommandToRecipe;
+    RecipeReactiveRepository recipeRepository;
 
     @Mock
     RecipeToRecipeCommand recipeToRecipeCommand;
@@ -31,23 +27,24 @@ class RecipeServiceImplTest {
     @BeforeEach
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        this.recipeService = new RecipeServiceImpl(this.recipeRepository, recipeCommandToRecipe, recipeToRecipeCommand);
+        this.recipeService = new RecipeReactiveService(this.recipeRepository, recipeToRecipeCommand);
     }
 
     @Test
     void getRecipes() {
+
         Recipe recipe = new Recipe();
-        HashSet<Recipe> recipesData = new HashSet<Recipe>();
-        recipesData.add(recipe);
-        System.out.println("A");
-        when(recipeRepository.findAll()).thenReturn(recipesData);
-        System.out.println("B");
-        Iterable<Recipe> recipes = this.recipeService.getRecipes();
+
+        when(recipeRepository.findAll()).thenReturn(Flux.just(recipe));
+
+        Iterable<Recipe> recipes = this.recipeService.getRecipes().collectList().block();
         int size = 0;
         for (Recipe ignored : recipes)
             size++;
+
         Assertions.assertEquals(size, 1);
         verify(this.recipeRepository, times(1)).findAll();
+
     }
 
     @Test
@@ -59,7 +56,10 @@ class RecipeServiceImplTest {
 
     @Test
     public void getRecipeByIdNotFound() {
-        when(this.recipeRepository.findAll()).thenReturn(new LinkedList<>());
+
+        when(this.recipeRepository.findAll()).thenReturn(Flux.just());
+
         Assertions.assertThrows(NotFoundException.class, () -> this.recipeService.getRecipe("1"));
+
     }
 }

@@ -8,15 +8,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
-
-import javax.validation.Valid;
-import java.io.IOException;
+import org.thymeleaf.exceptions.TemplateInputException;
 
 @Controller
 public class RecipeController {
+
     private final RecipeService recipeService;
+
+    private WebDataBinder webDataBinder;
 
     @Autowired
     public RecipeController(RecipeService recipeService) {
@@ -24,19 +25,25 @@ public class RecipeController {
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(NotFoundException.class)
-    public ModelAndView handleNotFound(Exception exception) {
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("404error");
-        modelAndView.addObject("exception", exception);
-        return modelAndView;
+    @ExceptionHandler({NotFoundException.class, TemplateInputException.class})
+    public String handleNotFound(Exception exception, Model model) {
+        model.addAttribute("exception", exception);
+        return "404Error";
+    }
+
+
+    @InitBinder
+    public void initBinder(WebDataBinder webDataBinder) {
+        this.webDataBinder = webDataBinder;
     }
 
     @GetMapping("/recipe")
-    public String showRecipe(@RequestParam String id, Model model) throws IOException, NotFoundException {
+    public String showRecipe(@RequestParam String id, Model model) throws NotFoundException {
+
         model.addAttribute("recipe", this.recipeService.getRecipe(id));
-        model.addAttribute("images", this.recipeService.getEncodedImages());
+
         return "recipe-detail";
+
     }
 
     @GetMapping("/recipe-form")
@@ -46,11 +53,13 @@ public class RecipeController {
     }
 
     @PostMapping("/recipe/save")
-    public String saveOrUpdate(@Valid @ModelAttribute("command") RecipeCommand command, BindingResult bindingResult) throws NotFoundException {
+    public String saveOrUpdate(@ModelAttribute("command") RecipeCommand command) throws NotFoundException {
+        webDataBinder.validate();
+        BindingResult bindingResult = webDataBinder.getBindingResult();
         if (bindingResult.hasErrors())
             return "form";
-        RecipeCommand savedCommand = this.recipeService.saveRecipeCommand(command);
-        return "redirect:/recipe?id=" + savedCommand.getId();
+        this.recipeService.saveRecipeCommand(command);
+        return "redirect:/recipe?id=" + command.getId();
     }
 
     @GetMapping("/recipe/{id}/update")

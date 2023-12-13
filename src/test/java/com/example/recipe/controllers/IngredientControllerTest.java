@@ -47,7 +47,7 @@ class IngredientControllerTest {
     @Test
     void listIngredients() throws Exception {
         RecipeCommand recipeCommand = new RecipeCommand();
-        when(this.recipeService.getCommand(anyString())).thenReturn(recipeCommand);
+        when(this.recipeService.getCommand(anyString())).thenReturn(Mono.just(recipeCommand));
         this.mockMvc.perform(get("/recipe/1/ingredients")).andExpect(status().isOk()).andExpect(view().name("recipe/ingredient/list")).andExpect(model().attributeExists("recipe"));
         verify(this.recipeService, times(1)).getCommand(anyString());
     }
@@ -55,14 +55,14 @@ class IngredientControllerTest {
     @Test
     void showIngredient() throws Exception {
         IngredientCommand ingredientCommand = new IngredientCommand();
-        when(this.ingredientService.findByRecipeIdAndIngredientId(anyString(), anyString())).thenReturn(ingredientCommand);
+        when(this.ingredientService.findByRecipeIdAndIngredientId(anyString(), anyString())).thenReturn(Mono.just(ingredientCommand));
         this.mockMvc.perform(get("/recipe/1/ingredient/2/show")).andExpect(status().isOk()).andExpect(view().name("recipe/ingredient/show")).andExpect(model().attributeExists("ingredient"));
     }
 
     @Test
     public void updateIngredientForm() throws Exception {
         IngredientCommand ingredientCommand = new IngredientCommand();
-        when(this.ingredientService.findByRecipeIdAndIngredientId(anyString(), anyString())).thenReturn(ingredientCommand);
+        when(this.ingredientService.findByRecipeIdAndIngredientId(anyString(), anyString())).thenReturn(Mono.just(ingredientCommand));
         when(this.unitOfMeasureService.listAllUoms()).thenReturn(Flux.just());
         this.mockMvc.perform(get("/recipe/1/ingredient/2/update")).andExpect(view().name("recipe/ingredient/form")).andExpect(model().attributeExists("ingredient")).andExpect(model().attributeExists("uomList"));
     }
@@ -74,7 +74,6 @@ class IngredientControllerTest {
         command.setId("3");
 
         when(this.unitOfMeasureService.findById("unitId")).thenReturn(Mono.just(new UnitOfMeasure()));
-        when(this.ingredientService.saveIngredientCommand(any())).thenReturn(command);
 
         this.mockMvc.perform(post("/recipe/2/ingredient").contentType(MediaType.APPLICATION_FORM_URLENCODED).param("id", "").param("description", "some string").param("uomId", "unitId")).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/recipe/2/ingredient/3/show"));
 
@@ -84,7 +83,7 @@ class IngredientControllerTest {
     public void newIngredientForm() throws Exception {
         RecipeCommand recipeCommand = new RecipeCommand();
         recipeCommand.setId("69");
-        when(this.recipeService.getCommand(anyString())).thenReturn(recipeCommand);
+        when(this.recipeService.getCommand(anyString())).thenReturn(Mono.just(recipeCommand));
         when(this.unitOfMeasureService.listAllUoms()).thenReturn(Flux.just());
         this.mockMvc.perform(get("/recipe/69/ingredient/new")).andExpect(status().isOk()).andExpect(view().name("recipe/ingredient/form")).andExpect(model().attributeExists("ingredient")).andExpect(model().attributeExists("uomList")).andExpect(model().attribute("ingredient", hasProperty("recipeId", Matchers.equalTo("69"))));
         verify(this.recipeService, times(0)).getCommand(anyString());

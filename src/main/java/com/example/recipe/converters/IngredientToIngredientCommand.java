@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class IngredientToIngredientCommand implements Converter<Ingredient, IngredientCommand> {
+
     @Override
     public IngredientCommand convert(Ingredient ingredient) {
         IngredientCommand ingredientCommand = new IngredientCommand();

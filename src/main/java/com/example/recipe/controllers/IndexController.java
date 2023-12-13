@@ -18,9 +18,11 @@ public class IndexController {
     }
 
     @RequestMapping({"", "/", "/index"})
-    public String getIndexPage(Model model) throws IOException {
+    public String getIndexPage(Model model) {
+
         model.addAttribute("recipes", this.recipeService.getRecipes());
-        model.addAttribute("images", this.recipeService.getEncodedImages());
+
         return "index";
+
     }
 }

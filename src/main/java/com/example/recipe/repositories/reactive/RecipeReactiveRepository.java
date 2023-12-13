@@ -8,6 +8,8 @@ public interface RecipeReactiveRepository extends ReactiveMongoRepository<Recipe
 
     Mono<Recipe> findRecipeByDescription(String description);
 
+    Mono<Recipe> findRecipeById(String id);
+
     void deleteRecipeByDescription(String description);
 
 }

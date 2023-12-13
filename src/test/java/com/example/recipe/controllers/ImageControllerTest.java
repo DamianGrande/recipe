@@ -10,9 +10,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import reactor.core.publisher.Mono;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -40,7 +39,7 @@ class ImageControllerTest {
     void getImageForm() throws Exception {
         RecipeCommand command = new RecipeCommand();
         command.setId("1");
-        when(this.recipeService.getCommand(anyString())).thenReturn(command);
+        when(this.recipeService.getCommand(anyString())).thenReturn(Mono.just(command));
         this.mockMvc.perform(get("/recipe/1/image")).andExpect(status().isOk()).andExpect(model().attributeExists("recipe")).andExpect(view().name("image-upload-form"));
         verify(this.recipeService, times(1)).getCommand(anyString());
     }

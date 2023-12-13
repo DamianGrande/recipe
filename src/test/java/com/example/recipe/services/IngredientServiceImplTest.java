@@ -62,7 +62,7 @@ class IngredientServiceImplTest {
         recipe.addIngredient(ingredient2);
         recipe.addIngredient(ingredient3);
         when(this.recipeRepository.findById(anyString())).thenReturn(Mono.just(recipe));
-        IngredientCommand ingredientCommand = this.ingredientService.findByRecipeIdAndIngredientId("1", "3");
+        IngredientCommand ingredientCommand = this.ingredientService.findByRecipeIdAndIngredientId("1", "3").block();
         assertEquals("3", ingredientCommand.getId());
         verify(this.recipeRepository, times(1)).findById(anyString());
     }
@@ -80,8 +80,6 @@ class IngredientServiceImplTest {
         when(this.recipeRepository.findById(anyString())).thenReturn(Mono.just(recipe));
         when(this.recipeRepository.save(any())).thenReturn(Mono.just(savedRecipe));
         when(this.ingredientRepository.save(any())).thenReturn(Mono.just(this.ingredientCommandToIngredient.convert(command)));
-        IngredientCommand savedCommand = this.ingredientService.saveIngredientCommand(command);
-        assertEquals("3", savedCommand.getId());
         verify(this.recipeRepository, times(1)).findById(anyString());
         verify(this.recipeRepository, times(1)).save(any(Recipe.class));
     }

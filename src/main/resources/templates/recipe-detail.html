@@ -9,7 +9,7 @@
 <body>
 <div class="container">
     <div class="row justify-content-center" style="margin-bottom: 5px; margin-top: 10px;">
-        <img th:src="@{'data:image/png;base64,'+${images.get(recipe.getId())}}"/>
+        <img th:src="@{'data:image/png;base64,'+${recipe.getImageAsBase64String()}}"/>
     </div>
     <div class="row justify-content-center">
         <a class="btn btn-primary" th:href="@{'/recipe/' + ${recipe.getId()} + '/image'}">Change Image</a>

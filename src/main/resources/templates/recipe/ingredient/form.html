@@ -18,9 +18,11 @@
         <div class="col-md-6 col-md-offset-3">
             <form th:object="${ingredient}"
                   th:action="@{'/recipe/' + *{recipeId} + '/ingredient'}">
+                <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
+                    <p>Please Correct Errors Below.</p>
+                </div>
                 <input type="hidden" th:field="*{recipeId}"/>
                 <input type="hidden" th:field="*{id}"/>
-                <input type="hidden" th:field="*{unitOfMeasure.id}"/>
                 <div class="panel-group">
                     <div class="panel panel-primary">
                         <div class="panel-heading">
@@ -28,9 +30,15 @@
                         </div>
                         <div class="panel-body">
                             <div class="row">
-                                <div class="col-md-3 form-group">
+                                <div class="col-md-3 form-group"
+                                     th:class="${#fields.hasErrors('description')} ? 'col-md-3 form-group has-error' : 'col-md-3 form-group'">
                                     <label>Description:</label>
                                     <input type="text" class="form-control" th:field="*{description}"/>
+                                    <span class="help-block" th:if="${#fields.hasErrors('description')}">
+                                        <ul>
+                                            <li th:each="err : ${#fields.errors('description')}" th:text="${err}"></li>
+                                        </ul>
+                                    </span>
                                 </div>
                                 <div class="col-md-3 form-group">
                                     <label>Amount</label>

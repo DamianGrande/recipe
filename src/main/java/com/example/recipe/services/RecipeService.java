@@ -3,20 +3,19 @@ package com.example.recipe.services;
 import com.example.recipe.commands.RecipeCommand;
 import com.example.recipe.domain.Recipe;
 import com.example.recipe.exceptions.NotFoundException;
-
-import java.io.IOException;
-import java.util.HashMap;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface RecipeService {
-    Iterable<Recipe> getRecipes();
 
-    HashMap<String, String> getEncodedImages() throws IOException;
+    Flux<Recipe> getRecipes();
 
-    Recipe getRecipe(String id) throws NotFoundException;
+    Mono<Recipe> getRecipe(String id) throws NotFoundException;
 
-    RecipeCommand saveRecipeCommand(RecipeCommand command) throws NotFoundException;
+    Mono<RecipeCommand> saveRecipeCommand(RecipeCommand command) throws NotFoundException;
 
-    RecipeCommand getCommand(String id) throws NotFoundException;
+    Mono<RecipeCommand> getCommand(String id) throws NotFoundException;
 
     void deleteById(String id);
+
 }

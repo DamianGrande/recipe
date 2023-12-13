@@ -181,7 +181,7 @@ public class DataLoader implements CommandLineRunner {
         this.recipeRepository.save(chicken);
 
         System.out.println("#####################################");
-        System.out.println("Number of recipes: " + this.recipeReactiveService.getAll().count().block());
+        System.out.println("Number of recipes: " + this.recipeReactiveService.getRecipes().count().block());
         System.out.println("#####################################");
 
     }

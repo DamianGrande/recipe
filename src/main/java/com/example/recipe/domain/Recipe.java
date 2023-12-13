@@ -1,12 +1,15 @@
 package com.example.recipe.domain;
 
+import com.example.recipe.bootstrap.DataLoader;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -52,4 +55,20 @@ public class Recipe {
             return new HashSet<Ingredient>();
         return this.ingredients;
     }
+
+    public String getImageAsBase64String() throws IOException {
+
+        if (this.getImage() == null)
+            this.setImage(DataLoader.getBytesFromImage("static/images/recipes/default.jpeg"));
+
+
+        byte[] image = new byte[this.getImage().length];
+        int index = 0;
+        for (Byte byt : this.getImage())
+            image[index++] = byt;
+
+        return Base64.encodeBase64String(image);
+
+    }
+
 }
