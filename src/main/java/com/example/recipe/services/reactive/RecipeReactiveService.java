@@ -1,6 +1,7 @@
 package com.example.recipe.services.reactive;
 
 import com.example.recipe.commands.RecipeCommand;
+import com.example.recipe.converters.RecipeCommandToRecipe;
 import com.example.recipe.converters.RecipeToRecipeCommand;
 import com.example.recipe.domain.Recipe;
 import com.example.recipe.exceptions.NotFoundException;
@@ -16,11 +17,13 @@ public class RecipeReactiveService implements RecipeService {
 
     private final RecipeReactiveRepository repository;
     private final RecipeToRecipeCommand recipeToRecipeCommand;
+    private final RecipeCommandToRecipe recipeCommandToRecipe;
 
     @Autowired
-    public RecipeReactiveService(RecipeReactiveRepository repository, RecipeToRecipeCommand recipeToRecipeCommand) {
+    public RecipeReactiveService(RecipeReactiveRepository repository, RecipeToRecipeCommand recipeToRecipeCommand, RecipeCommandToRecipe recipeCommandToRecipe) {
         this.repository = repository;
         this.recipeToRecipeCommand = recipeToRecipeCommand;
+        this.recipeCommandToRecipe = recipeCommandToRecipe;
     }
 
     public Mono<Recipe> save(Recipe recipe) {
@@ -48,12 +51,12 @@ public class RecipeReactiveService implements RecipeService {
 
     @Override
     public Mono<RecipeCommand> saveRecipeCommand(RecipeCommand command) throws NotFoundException {
-        return this.getRecipe(command.getId()).map(this.recipeToRecipeCommand::convert);
+        return this.save(this.recipeCommandToRecipe.convert(command)).mapNotNull(this.recipeToRecipeCommand::convert);
     }
 
     @Override
     public Mono<RecipeCommand> getCommand(String id) throws NotFoundException {
-        return this.getRecipe(id).map(this.recipeToRecipeCommand::convert);
+        return this.getRecipe(id).mapNotNull(this.recipeToRecipeCommand::convert);
     }
 
     @Override

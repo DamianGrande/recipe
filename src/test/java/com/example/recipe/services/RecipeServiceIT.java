@@ -14,6 +14,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import reactor.core.publisher.Mono;
 
 
+import java.util.Objects;
+
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
@@ -41,18 +43,19 @@ public class RecipeServiceIT {
         String oldDescription = testRecipe.getDescription();
 
         RecipeCommand testRecipeCommand = this.recipeToRecipeCommand.convert(testRecipe);
-        testRecipeCommand.setDescription(RecipeServiceIT.NEW_DESCRIPTION);
+        Objects.requireNonNull(testRecipeCommand).setDescription(RecipeServiceIT.NEW_DESCRIPTION);
         Mono<RecipeCommand> savedRecipeCommand = this.recipeService.saveRecipeCommand(testRecipeCommand);
 
-        assertEquals(RecipeServiceIT.NEW_DESCRIPTION, savedRecipeCommand.block().getDescription());
-        assertEquals(testRecipe.getId(), savedRecipeCommand.block().getId());
-        assertEquals(testRecipe.getCategories().size(), savedRecipeCommand.block().getCategories().size());
-        assertEquals(testRecipe.getIngredients().size(), savedRecipeCommand.block().getIngredients().size());
+        assertEquals(RecipeServiceIT.NEW_DESCRIPTION, Objects.requireNonNull(savedRecipeCommand.block()).getDescription());
+        assertEquals(testRecipe.getId(), Objects.requireNonNull(savedRecipeCommand.block()).getId());
+        assertEquals(testRecipe.getCategories().size(), Objects.requireNonNull(savedRecipeCommand.block()).getCategories().size());
+        assertEquals(testRecipe.getIngredients().size(), Objects.requireNonNull(savedRecipeCommand.block()).getIngredients().size());
 
         testRecipeCommand.setDescription(oldDescription);
         savedRecipeCommand = this.recipeService.saveRecipeCommand(testRecipeCommand);
 
-        assertEquals(oldDescription, savedRecipeCommand.block().getDescription());
+        assertEquals(oldDescription, Objects.requireNonNull(savedRecipeCommand.block()).getDescription());
 
     }
+
 }

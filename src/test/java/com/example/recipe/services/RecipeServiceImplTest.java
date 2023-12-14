@@ -1,5 +1,6 @@
 package com.example.recipe.services;
 
+import com.example.recipe.converters.RecipeCommandToRecipe;
 import com.example.recipe.converters.RecipeToRecipeCommand;
 import com.example.recipe.domain.Recipe;
 import com.example.recipe.exceptions.NotFoundException;
@@ -16,18 +17,21 @@ import static org.mockito.Mockito.*;
 
 class RecipeServiceImplTest {
 
-    RecipeReactiveService recipeService;
+    private RecipeReactiveService recipeService;
 
     @Mock
-    RecipeReactiveRepository recipeRepository;
+    private RecipeReactiveRepository recipeRepository;
 
     @Mock
-    RecipeToRecipeCommand recipeToRecipeCommand;
+    private RecipeToRecipeCommand recipeToRecipeCommand;
+
+    @Mock
+    private RecipeCommandToRecipe recipeCommandToRecipe;
 
     @BeforeEach
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
-        this.recipeService = new RecipeReactiveService(this.recipeRepository, recipeToRecipeCommand);
+        this.recipeService = new RecipeReactiveService(recipeRepository, recipeToRecipeCommand, recipeCommandToRecipe);
     }
 
     @Test
