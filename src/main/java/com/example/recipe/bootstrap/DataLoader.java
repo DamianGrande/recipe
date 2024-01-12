@@ -1,8 +1,8 @@
 package com.example.recipe.bootstrap;
 
 import com.example.recipe.domain.*;
-import com.example.recipe.repositories.CategoryRepository;
-import com.example.recipe.repositories.RecipeRepository;
+import com.example.recipe.repositories.reactive.CategoryReactiveRepository;
+import com.example.recipe.repositories.reactive.RecipeReactiveRepository;
 import com.example.recipe.repositories.reactive.UnitOfMeasureReactiveRepository;
 import com.example.recipe.services.reactive.CategoryReactiveService;
 import com.example.recipe.services.reactive.RecipeReactiveService;
@@ -25,8 +25,8 @@ import java.util.HashSet;
 public class DataLoader implements CommandLineRunner {
 
     private final UnitOfMeasureReactiveRepository unitOfMeasureRepository;
-    private final CategoryRepository categoryRepository;
-    private final RecipeRepository recipeRepository;
+    private final CategoryReactiveRepository categoryRepository;
+    private final RecipeReactiveRepository recipeRepository;
     private final UnitOfMeasureReactiveService unitOfMeasureReactiveService;
     private final CategoryReactiveService categoryReactiveService;
     private final RecipeReactiveService recipeReactiveService;
@@ -44,7 +44,7 @@ public class DataLoader implements CommandLineRunner {
     }
 
     @Autowired
-    public DataLoader(UnitOfMeasureReactiveRepository unitOfMeasureRepository, CategoryRepository categoryRepository, RecipeRepository recipeRepository, UnitOfMeasureReactiveService unitOfMeasureReactiveService, CategoryReactiveService categoryReactiveService, RecipeReactiveService recipeReactiveService) {
+    public DataLoader(UnitOfMeasureReactiveRepository unitOfMeasureRepository, CategoryReactiveRepository categoryRepository, RecipeReactiveRepository recipeRepository, UnitOfMeasureReactiveService unitOfMeasureReactiveService, CategoryReactiveService categoryReactiveService, RecipeReactiveService recipeReactiveService) {
         this.unitOfMeasureRepository = unitOfMeasureRepository;
         this.categoryRepository = categoryRepository;
         this.recipeRepository = recipeRepository;
@@ -68,7 +68,7 @@ public class DataLoader implements CommandLineRunner {
 
         Notes guacamoleNotes = new Notes("guacamoleNotes");
         guacamoleNotes.setRecipeNotes("Chilling tomatoes hurts their flavor. So, if you want to add chopped tomato to your guacamole, add it just before serving.");
-        Category mexican = this.categoryRepository.findByDescription("Mexican").get();
+        Category mexican = this.categoryRepository.findCategoryByDescription("Mexican").block();
         Recipe guacamole = new Recipe("Guacamole");
         HashSet<Recipe> recipes = new HashSet<Recipe>();
         HashSet<Category> categories = new HashSet<Category>();
@@ -113,10 +113,10 @@ public class DataLoader implements CommandLineRunner {
         guacamole.setNotes(guacamoleNotes);
         guacamole.setIngredients(ingredients);
         guacamole.setCategories(categories);
-        this.recipeRepository.save(guacamole);
+        this.recipeRepository.save(guacamole).subscribe();
         Notes chickenNotes = new Notes("chickenNotes");
         chickenNotes.setRecipeNotes("It's just a chicken.");
-        Category american = this.categoryRepository.findByDescription("American").get();
+        Category american = this.categoryRepository.findCategoryByDescription("American").block();
         Recipe chicken = new Recipe("Chicken");
         HashSet<Recipe> chickenRecipes = new HashSet<Recipe>();
         HashSet<Category> chickenCategories = new HashSet<Category>();
@@ -178,7 +178,7 @@ public class DataLoader implements CommandLineRunner {
         chicken.setNotes(chickenNotes);
         chicken.setIngredients(chickenIngredients);
         chicken.setCategories(chickenCategories);
-        this.recipeRepository.save(chicken);
+        this.recipeRepository.save(chicken).subscribe();
 
         System.out.println("#####################################");
         System.out.println("Number of recipes: " + this.recipeReactiveService.getRecipes().count().block());
@@ -311,19 +311,19 @@ public class DataLoader implements CommandLineRunner {
 
         Category category = new Category();
         category.setDescription("American");
-        this.categoryRepository.save(category);
+        this.categoryRepository.save(category).block();
 
         category = new Category();
         category.setDescription("Italian");
-        this.categoryRepository.save(category);
+        this.categoryRepository.save(category).block();
 
         category = new Category();
         category.setDescription("Mexican");
-        this.categoryRepository.save(category);
+        this.categoryRepository.save(category).block();
 
         category = new Category();
         category.setDescription("FastFood");
-        this.categoryRepository.save(category);
+        this.categoryRepository.save(category).block();
 
     }
 

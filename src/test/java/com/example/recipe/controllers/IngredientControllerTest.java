@@ -3,95 +3,117 @@ package com.example.recipe.controllers;
 import com.example.recipe.commands.IngredientCommand;
 import com.example.recipe.commands.RecipeCommand;
 import com.example.recipe.domain.UnitOfMeasure;
-import com.example.recipe.services.IngredientService;
-import com.example.recipe.services.RecipeService;
-import com.example.recipe.services.UnitOfMeasureService;
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.reactive.server.EntityExchangeResult;
+import org.springframework.ui.Model;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import static org.hamcrest.Matchers.hasProperty;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-class IngredientControllerTest {
-    @Mock
-    RecipeService recipeService;
 
-    @Mock
-    IngredientService ingredientService;
-
-    @Mock
-    UnitOfMeasureService unitOfMeasureService;
-
-    IngredientController controller;
-
-    MockMvc mockMvc;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.initMocks(this);
-        this.controller = new IngredientController(this.recipeService, this.ingredientService, unitOfMeasureService);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(this.controller).build();
-    }
+class IngredientControllerTest extends FluxControllerTest {
 
     @Test
-    void listIngredients() throws Exception {
+    void listIngredients() {
+
         RecipeCommand recipeCommand = new RecipeCommand();
+
         when(this.recipeService.getCommand(anyString())).thenReturn(Mono.just(recipeCommand));
-        this.mockMvc.perform(get("/recipe/1/ingredients")).andExpect(status().isOk()).andExpect(view().name("recipe/ingredient/list")).andExpect(model().attributeExists("recipe"));
+
+        EntityExchangeResult<byte[]> response = super.webTestClient.get().uri("/recipe/1/ingredients").exchange().expectStatus().isOk().expectBody().returnResult();
+
         verify(this.recipeService, times(1)).getCommand(anyString());
+        verify(super.ingredientController, times(1)).listIngredients(eq("1"), super.modelArgumentCaptor.capture());
+
+        super.checkModelAndView(super.modelArgumentCaptor.getValue(), "recipe", "Ingredient List", response);
+
     }
 
     @Test
-    void showIngredient() throws Exception {
+    void showIngredient() {
+
         IngredientCommand ingredientCommand = new IngredientCommand();
-        when(this.ingredientService.findByRecipeIdAndIngredientId(anyString(), anyString())).thenReturn(Mono.just(ingredientCommand));
-        this.mockMvc.perform(get("/recipe/1/ingredient/2/show")).andExpect(status().isOk()).andExpect(view().name("recipe/ingredient/show")).andExpect(model().attributeExists("ingredient"));
+
+        when(super.ingredientService.findByRecipeIdAndIngredientId(anyString(), anyString())).thenReturn(Mono.just(ingredientCommand));
+
+        EntityExchangeResult<byte[]> response = super.webTestClient.get().uri("/recipe/1/ingredient/2/show").exchange().expectStatus().isOk().expectBody().returnResult();
+
+        verify(super.ingredientController, times(1)).showIngredient(eq("1"), eq("2"), super.modelArgumentCaptor.capture());
+
+        super.checkModelAndView(super.modelArgumentCaptor.getValue(), "ingredient", "Ingredient Detail", response);
+
     }
 
     @Test
-    public void updateIngredientForm() throws Exception {
+    public void updateIngredientForm() {
+
         IngredientCommand ingredientCommand = new IngredientCommand();
-        when(this.ingredientService.findByRecipeIdAndIngredientId(anyString(), anyString())).thenReturn(Mono.just(ingredientCommand));
-        when(this.unitOfMeasureService.listAllUoms()).thenReturn(Flux.just());
-        this.mockMvc.perform(get("/recipe/1/ingredient/2/update")).andExpect(view().name("recipe/ingredient/form")).andExpect(model().attributeExists("ingredient")).andExpect(model().attributeExists("uomList"));
+
+        when(super.ingredientService.findByRecipeIdAndIngredientId(anyString(), anyString())).thenReturn(Mono.just(ingredientCommand));
+        when(super.unitOfMeasureService.listAllUoms()).thenReturn(Flux.just());
+
+        EntityExchangeResult<byte[]> response = super.webTestClient.get().uri("/recipe/1/ingredient/2/update").exchange().expectStatus().isOk().expectBody().returnResult();
+
+        verify(super.ingredientController, times(1)).updateIngredient(eq("1"), eq("2"), super.modelArgumentCaptor.capture());
+
+        Model model = super.modelArgumentCaptor.getValue();
+
+        assertNotNull(model);
+        assertNotNull(model.getAttribute("ingredient"));
+        assertNotNull(model.getAttribute("uomList"));
+        assertEquals("Ingredient Form", super.getViewFromResponse(response));
+
     }
 
     @Test
-    public void saveOrUpdate() throws Exception {
-
-        IngredientCommand command = new IngredientCommand();
-        command.setId("3");
+    public void saveOrUpdate() {
 
         when(this.unitOfMeasureService.findById("unitId")).thenReturn(Mono.just(new UnitOfMeasure()));
 
-        this.mockMvc.perform(post("/recipe/2/ingredient").contentType(MediaType.APPLICATION_FORM_URLENCODED).param("id", "").param("description", "some string").param("uomId", "unitId")).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/recipe/2/ingredient/3/show"));
+        EntityExchangeResult<byte[]> response = super.webTestClient.post().uri(uriBuilder -> uriBuilder.path("/recipe/2/ingredient").queryParam("id", "3").queryParam("description", "some string").queryParam("uomId", "unitId").build()).contentType(MediaType.APPLICATION_FORM_URLENCODED).exchange().expectStatus().is3xxRedirection().expectBody().returnResult();
+
+        assertTrue(response.toString().contains("Location: [/recipe/2/ingredient/3/show]"));
 
     }
 
     @Test
-    public void newIngredientForm() throws Exception {
+    public void newIngredientForm() {
+
         RecipeCommand recipeCommand = new RecipeCommand();
         recipeCommand.setId("69");
+
         when(this.recipeService.getCommand(anyString())).thenReturn(Mono.just(recipeCommand));
         when(this.unitOfMeasureService.listAllUoms()).thenReturn(Flux.just());
-        this.mockMvc.perform(get("/recipe/69/ingredient/new")).andExpect(status().isOk()).andExpect(view().name("recipe/ingredient/form")).andExpect(model().attributeExists("ingredient")).andExpect(model().attributeExists("uomList")).andExpect(model().attribute("ingredient", hasProperty("recipeId", Matchers.equalTo("69"))));
+
+        EntityExchangeResult<byte[]> response = super.webTestClient.get().uri("/recipe/69/ingredient/new").exchange().expectStatus().isOk().expectBody().returnResult();
+
         verify(this.recipeService, times(0)).getCommand(anyString());
+        verify(super.ingredientController, times(1)).newRecipeForm(eq("69"), super.modelArgumentCaptor.capture());
+
+        Model model = super.modelArgumentCaptor.getValue();
+
+        assertNotNull(model);
+        assertNotNull(model.getAttribute("uomList"));
+
+        IngredientCommand ingredient = (IngredientCommand) model.getAttribute("ingredient");
+
+        assertNotNull(ingredient);
+        assertEquals("69", ingredient.getRecipeId());
+
     }
 
     @Test
-    public void deleteIngredient() throws Exception {
-        this.mockMvc.perform(get("/recipe/1/ingredient/3/delete")).andExpect(status().is3xxRedirection()).andExpect(view().name("redirect:/recipe/1/ingredients"));
+    public void deleteIngredient() {
+
+        EntityExchangeResult<byte[]> response = super.webTestClient.get().uri("/recipe/1/ingredient/3/delete").exchange().expectStatus().is3xxRedirection().expectBody().returnResult();
+
         verify(this.ingredientService, times(1)).deleteIngredient("1", "3");
+
+        assertTrue(response.toString().contains("Location: [/recipe/1/ingredients]"));
+
     }
+
 }

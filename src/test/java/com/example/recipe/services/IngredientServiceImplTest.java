@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Mono;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -79,7 +80,8 @@ class IngredientServiceImplTest {
         savedRecipe.getIngredients().iterator().next().setId("3");
         when(this.recipeRepository.findById(anyString())).thenReturn(Mono.just(recipe));
         when(this.recipeRepository.save(any())).thenReturn(Mono.just(savedRecipe));
-        when(this.ingredientRepository.save(any())).thenReturn(Mono.just(this.ingredientCommandToIngredient.convert(command)));
+        when(this.ingredientRepository.save(any())).thenReturn(Mono.just(Objects.requireNonNull(this.ingredientCommandToIngredient.convert(command))));
+        this.ingredientService.saveIngredientCommand(command);
         verify(this.recipeRepository, times(1)).findById(anyString());
         verify(this.recipeRepository, times(1)).save(any(Recipe.class));
     }

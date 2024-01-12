@@ -27,7 +27,7 @@ public class RecipeReactiveService implements RecipeService {
     }
 
     public Mono<Recipe> save(Recipe recipe) {
-        return this.repository.save(recipe);
+        return this.repository.save(recipe).doOnError(throwable -> System.out.println("ERROR: " + throwable.getMessage()));
     }
 
     public Mono<Recipe> getByDescription(String description) {
@@ -46,7 +46,7 @@ public class RecipeReactiveService implements RecipeService {
 
     @Override
     public Mono<Recipe> getRecipe(String id) throws NotFoundException {
-        return this.repository.findRecipeById(id);
+        return this.repository.findRecipeById(id).switchIfEmpty(Mono.error(new NotFoundException()));
     }
 
     @Override

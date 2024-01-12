@@ -5,7 +5,7 @@ import com.example.recipe.converters.RecipeCommandToRecipe;
 import com.example.recipe.converters.RecipeToRecipeCommand;
 import com.example.recipe.domain.Recipe;
 import com.example.recipe.exceptions.NotFoundException;
-import com.example.recipe.repositories.RecipeRepository;
+import com.example.recipe.repositories.reactive.RecipeReactiveRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class RecipeServiceIT {
     RecipeService recipeService;
 
     @Autowired
-    RecipeRepository recipeRepository;
+    RecipeReactiveRepository recipeRepository;
 
     @Autowired
     RecipeCommandToRecipe recipeCommandToRecipe;
@@ -38,7 +38,7 @@ public class RecipeServiceIT {
     @Test
     public void testSaveOfDescription() throws NotFoundException {
 
-        Iterable<Recipe> recipes = this.recipeRepository.findAll();
+        Iterable<Recipe> recipes = this.recipeRepository.findAll().toIterable();
         Recipe testRecipe = recipes.iterator().next();
         String oldDescription = testRecipe.getDescription();
 

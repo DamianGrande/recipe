@@ -19,6 +19,7 @@
                     <p>Please Correct Errors Below.</p>
                 </div>
                 <input type="hidden" th:field="*{id}"/>
+                <input type="hidden" th:field="*{image}"/>
                 <div class="panel-group">
                     <div class="panel panel-primary">
                         <div class="panel-heading">
@@ -160,6 +161,10 @@
                                         <input type="hidden" th:field="*{ingredients[__${index.index}__].description}">
                                         <input type="hidden"
                                                th:field="*{ingredients[__${index.index}__].unitOfMeasure}">
+                                        <input type="hidden"
+                                               th:field="*{ingredients[__${index.index}__].unitOfMeasure.id}">
+                                        <input type="hidden"
+                                               th:field="*{ingredients[__${index.index}__].unitOfMeasure.description}">
                                     </div>
                                 </div>
                             </div>

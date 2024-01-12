@@ -58,7 +58,7 @@ public class RecipeController {
         BindingResult bindingResult = webDataBinder.getBindingResult();
         if (bindingResult.hasErrors())
             return "form";
-        this.recipeService.saveRecipeCommand(command);
+        this.recipeService.saveRecipeCommand(command).subscribe();
         return "redirect:/recipe?id=" + command.getId();
     }
 

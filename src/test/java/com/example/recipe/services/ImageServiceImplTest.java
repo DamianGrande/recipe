@@ -7,16 +7,26 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.http.codec.multipart.FilePart;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import java.nio.ByteBuffer;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class ImageServiceImplTest {
+
     @Mock
     RecipeReactiveRepository recipeRepository;
+
+    @Mock
+    FilePart filePart;
+
+    @Mock
+    DataBuffer dataBuffer;
+
 
     ImageService imageService;
 
@@ -28,15 +38,26 @@ class ImageServiceImplTest {
 
     @Test
     void saveImageFile() throws Exception {
+
         String id = "1";
-        MultipartFile multipartFile = new MockMultipartFile("imageFile", "testing.txt", "text/plain", "Spring Framework Guru".getBytes());
+        int bufferLength = 3;
         Recipe recipe = new Recipe();
         recipe.setId(id);
+
         when(this.recipeRepository.findById(anyString())).thenReturn(Mono.just(recipe));
+        when(this.filePart.content()).thenReturn(Flux.just(this.dataBuffer));
+        when(this.dataBuffer.readableByteCount()).thenReturn(bufferLength);
+        when(this.dataBuffer.asByteBuffer()).thenReturn(ByteBuffer.wrap(new byte[3]));
+
         ArgumentCaptor<Recipe> argumentCaptor = ArgumentCaptor.forClass(Recipe.class);
-        this.imageService.saveImageFile(id, multipartFile);
+
+        this.imageService.saveImageFile(id, filePart);
+
         verify(this.recipeRepository, times(1)).save(argumentCaptor.capture());
+
         Recipe savedRecipe = argumentCaptor.getValue();
-        assertEquals(multipartFile.getBytes().length, savedRecipe.getImage().length);
+        assertEquals(bufferLength, savedRecipe.getImage().length);
+
     }
+
 }

@@ -1,10 +1,9 @@
 package com.example.recipe.services;
 
-import com.example.recipe.domain.Recipe;
 import com.example.recipe.repositories.reactive.RecipeReactiveRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ImageServiceImpl implements ImageService {
@@ -16,12 +15,16 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public void saveImageFile(String recipeId, MultipartFile file) throws Exception {
-        Recipe recipe = this.recipeRepository.findById(recipeId).block();
-        Byte[] image = new Byte[file.getBytes().length];
-        for (int i = 0; i < file.getBytes().length; i++)
-            image[i] = file.getBytes()[i];
-        recipe.setImage(image);
-        this.recipeRepository.save(recipe);
+    public void saveImageFile(String recipeId, FilePart file) {
+        this.recipeRepository.findById(recipeId).subscribe(recipe -> file.content().subscribe(dataBuffer -> {
+            int dataBufferLength = dataBuffer.readableByteCount();
+            byte[] bytes = dataBuffer.asByteBuffer().array();
+            Byte[] image = new Byte[dataBufferLength];
+            for (int i = 0; i < dataBufferLength; i++)
+                image[i] = bytes[i];
+            recipe.setImage(image);
+            this.recipeRepository.save(recipe).subscribe();
+        }));
     }
+
 }

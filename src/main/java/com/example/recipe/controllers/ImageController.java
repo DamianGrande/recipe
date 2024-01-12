@@ -4,15 +4,13 @@ import com.example.recipe.exceptions.NotFoundException;
 import com.example.recipe.services.ImageService;
 import com.example.recipe.services.RecipeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
+@CrossOrigin("http://localhost:8080")
 public class ImageController {
     private final ImageService imageService;
     private final RecipeService recipeService;
@@ -29,9 +27,11 @@ public class ImageController {
         return "image-upload-form";
     }
 
-    @PostMapping("/recipe/{id}/image")
-    public String handleImagePost(@PathVariable String id, @RequestParam("imageFile") MultipartFile file) throws Exception {
+    @PostMapping(value = "/recipe/{id}/image")
+    public String handleImagePost(@PathVariable String id, @RequestPart("imageFile") FilePart file) throws Exception {
         this.imageService.saveImageFile(id, file);
         return "redirect:/recipe/?id=" + id;
     }
+
 }
+

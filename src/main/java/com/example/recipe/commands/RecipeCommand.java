@@ -47,4 +47,6 @@ public class RecipeCommand {
     private Difficulty difficulty;
     private NotesCommand notes;
     private List<CategoryCommand> categories = new LinkedList<CategoryCommand>();
+    private Byte[] image;
+
 }

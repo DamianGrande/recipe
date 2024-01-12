@@ -12,7 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 class RecipeServiceImplTest {
@@ -29,8 +31,8 @@ class RecipeServiceImplTest {
     private RecipeCommandToRecipe recipeCommandToRecipe;
 
     @BeforeEach
-    public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
         this.recipeService = new RecipeReactiveService(recipeRepository, recipeToRecipeCommand, recipeCommandToRecipe);
     }
 
@@ -59,11 +61,23 @@ class RecipeServiceImplTest {
     }
 
     @Test
-    public void getRecipeByIdNotFound() {
+    public void getRecipeById() {
 
-        when(this.recipeRepository.findAll()).thenReturn(Flux.just());
+        Recipe recipe = new Recipe();
 
-        Assertions.assertThrows(NotFoundException.class, () -> this.recipeService.getRecipe("1"));
+        when(this.recipeRepository.findRecipeById("1")).thenReturn(Mono.just(recipe));
+
+        assertEquals(recipe, this.recipeService.getRecipe("1").block());
 
     }
+
+    @Test
+    public void getRecipeByIdNotFound() {
+
+        when(this.recipeRepository.findRecipeById("1")).thenReturn(Mono.empty());
+
+        Assertions.assertThrows(NotFoundException.class, () -> this.recipeService.getRecipe("1").block());
+
+    }
+
 }
