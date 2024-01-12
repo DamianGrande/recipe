@@ -28,7 +28,7 @@ public class RecipeController {
     @ExceptionHandler({NotFoundException.class, TemplateInputException.class})
     public String handleNotFound(Exception exception, Model model) {
         model.addAttribute("exception", exception);
-        return "404Error";
+        return "404error";
     }
 
 
